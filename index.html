@@ -76,10 +76,10 @@
 
     <div class="controls">
         <button id="likeBtn" class="like">👍</button>
-        <button id="prevBtn">⏮️</button>
+        <button id="prevBtn">️</button>
         <button id="playBtn" class="play">▶️</button>
         <button id="nextBtn">⏭️</button>
-        <button id="dislikeBtn" class="dislike"></button>
+        <button id="dislikeBtn" class="dislike">👎</button>
     </div>
     <div class="status" id="status"></div>
 
@@ -112,36 +112,36 @@
 
         // Запрос следующего трека через HTTP API
         async function loadNextTrack() {
-    nextBtn.classList.add('loading');
-    updateStatus("Загрузка следующего...");
-    console.log("Запрос к API:", `${API_URL}/api/next_track?user_id=${userId}`);
+            nextBtn.classList.add('loading');
+            updateStatus("Загрузка следующего...");
+            console.log("Запрос к API:", `${API_URL}/api/next_track?user_id=${userId}`);
 
-    try {
-        const response = await fetch(`${API_URL}/api/next_track?user_id=${userId}`);
-        console.log("Status:", response.status);
+            try {
+                const response = await fetch(`${API_URL}/api/next_track?user_id=${userId}`);
+                console.log("Status:", response.status);
 
-        const trackData = await response.json();
-        console.log("Получены данные:", trackData);
+                const trackData = await response.json();
+                console.log("Получены данные:", trackData);
 
-        if (trackData.error) {
-            updateStatus("Ошибка: " + trackData.error);
-        } else {
-            console.log("Вызов loadTrack...");
-            loadTrack(trackData, true);
+                if (trackData.error) {
+                    updateStatus("Ошибка: " + trackData.error);
+                } else {
+                    console.log("Вызов loadTrack...");
+                    loadTrack(trackData, true);
+                }
+            } catch (e) {
+                console.error("Fetch error:", e);
+                updateStatus("Ошибка сети: " + e.message);
+            }
+
+            nextBtn.classList.remove('loading');
         }
-    } catch (e) {
-        console.error("Fetch error:", e);
-        updateStatus("Ошибка сети: " + e.message);
-    }
-
-    nextBtn.classList.remove('loading');
-}
 
         // Лайк трека
         async function likeTrack() {
             try {
                 await fetch(`${API_URL}/api/like?user_id=${userId}`, { method: 'POST' });
-                updateStatus(" Добавлено в лайки!");
+                updateStatus("👍 Добавлено в лайки!");
                 setTimeout(() => updateStatus(""), 2000);
             } catch (e) {
                 console.error("Like error:", e);
@@ -199,45 +199,45 @@
         });
 
         function loadTrack(trackData, isNew = false) {
-    currentTrackData = trackData;
-    titleEl.innerText = trackData.title;
-    artistEl.innerText = trackData.artist;
+            currentTrackData = trackData;
+            titleEl.innerText = trackData.title;
+            artistEl.innerText = trackData.artist;
 
-    // Добавляем timestamp чтобы браузер не кэшировал
-    const cacheBuster = `?t=${Date.now()}`;
-    const newSrc = trackData.file_url + cacheBuster;
+            // Добавляем timestamp чтобы браузер не кэшировал
+            const cacheBuster = `?t=${Date.now()}`;
+            const newSrc = trackData.file_url + cacheBuster;
 
-    if (isNew || audio.src !== newSrc) {
-        console.log("Загрузка нового трека:", trackData.title);
+            if (isNew || audio.src !== newSrc) {
+                console.log("Загрузка нового трека:", trackData.title);
 
-        // Останавливаем текущее воспроизведение
-        audio.pause();
-        audio.src = '';
-        audio.load();
+                // Останавливаем текущее воспроизведение
+                audio.pause();
+                audio.src = '';
+                audio.load();
 
-        // Устанавливаем новый источник
-        audio.src = newSrc;
-        progressBar.style.width = '0%';
+                // Устанавливаем новый источник
+                audio.src = newSrc;
+                progressBar.style.width = '0%';
 
-        // Автовоспроизведение если было взаимодействие
-        if (hasInteracted) {
-            console.log("Автовоспроизведение...");
-            setTimeout(() => {
-                audio.play().then(() => {
-                    isPlaying = true;
-                    playBtn.innerText = '⏸️';
-                    updateStatus("");
-                }).catch(err => {
-                    console.error("Autoplay error:", err);
-                    updateStatus("Нажми Play для воспроизведения");
-                });
-            }, 100);
+                // Автовоспроизведение если было взаимодействие
+                if (hasInteracted) {
+                    console.log("Автовоспроизведение...");
+                    setTimeout(() => {
+                        audio.play().then(() => {
+                            isPlaying = true;
+                            playBtn.innerText = '⏸️';
+                            updateStatus("");
+                        }).catch(err => {
+                            console.error("Autoplay error:", err);
+                            updateStatus("Нажми Play для воспроизведения");
+                        });
+                    }, 100);
+                }
+            }
+
+            nextBtn.classList.remove('loading');
+            updateStatus("");
         }
-    }
-
-    nextBtn.classList.remove('loading');
-    updateStatus("");
-}
 
         const urlParams = new URLSearchParams(window.location.search);
         const dataParam = urlParams.get('data');
