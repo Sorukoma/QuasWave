@@ -45,9 +45,35 @@
         }
         button:active { opacity: 0.8; }
         .loading { opacity: 0.5; pointer-events: none; }
+        #startOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        #startOverlay.hidden { display: none; }
+        #startBtn {
+            padding: 20px 40px;
+            font-size: 24px;
+            background: #3390ec;
+        }
     </style>
 </head>
 <body>
+    <!-- Overlay для первого клика -->
+    <div id="startOverlay">
+        <div class="cover">🎵</div>
+        <h2>Готов слушать?</h2>
+        <button id="startBtn">▶️ Начать воспроизведение</button>
+    </div>
+
     <div class="cover">🎵</div>
     <div class="track-info">
         <div class="track-title" id="title">Загрузка...</div>
@@ -58,43 +84,39 @@
 
     <div class="controls">
         <button id="prevBtn">⏮️ Пред.</button>
-        <button id="nextBtn">След. ⏭️</button>
+        <button id="nextBtn">След. ️</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрываем на весь экран
+        tg.expand();
 
         const audio = document.getElementById('audioPlayer');
         const titleEl = document.getElementById('title');
         const artistEl = document.getElementById('artist');
         const nextBtn = document.getElementById('nextBtn');
+        const startOverlay = document.getElementById('startOverlay');
+        const startBtn = document.getElementById('startBtn');
 
         let currentTrackData = null;
+        let hasInteracted = false;
 
-        // Функция запроса следующего трека у бота
         async function loadNextTrack() {
             nextBtn.classList.add('loading');
             nextBtn.innerText = 'Загрузка...';
-
-            // Отправляем данные боту, чтобы он вернул новый трек
-            // Мы используем sendData, а бот будет слушать это событие
             tg.sendData(JSON.stringify({ action: "get_next_track" }));
         }
 
-        // Слушаем сообщения от бота (бот будет присылать данные трека через WebApp script или мы можем парсить start_param)
-        // Для простоты: бот будет обновлять UI через tg.MainButton или мы сделаем хак с postMessage,
-        // но самый надежный способ для Mini App без своего бэкенда - это стартовые параметры.
-
-        // В ДАННОЙ РЕАЛИЗАЦИИ: Мы будем парсить URL.
-        // Бот будет открывать WebApp с URL вида: https://твой-хостинг.com/?data=BASE64_JSON
         const urlParams = new URLSearchParams(window.location.search);
         const dataParam = urlParams.get('data');
 
         if (dataParam) {
             try {
                 const trackData = JSON.parse(atob(dataParam));
-                playTrack(trackData);
+                currentTrackData = trackData;
+                titleEl.innerText = trackData.title;
+                artistEl.innerText = trackData.artist;
+                audio.src = trackData.file_url;
             } catch (e) {
                 console.error("Ошибка парсинга данных", e);
             }
@@ -103,19 +125,34 @@
             artistEl.innerText = "в чате с ботом";
         }
 
+        // ПЕРВЫЙ КЛИК - разблокируем автовоспроизведение
+        startBtn.addEventListener('click', () => {
+            hasInteracted = true;
+            startOverlay.classList.add('hidden');
+
+            if (audio.src) {
+                audio.play().catch(e => {
+                    console.error("Ошибка воспроизведения:", e);
+                    titleEl.innerText = "Ошибка: " + e.message;
+                });
+            }
+        });
+
         function playTrack(trackData) {
             currentTrackData = trackData;
             titleEl.innerText = trackData.title;
             artistEl.innerText = trackData.artist;
-
             audio.src = trackData.file_url;
-            audio.play().catch(e => console.log("Autoplay blocked, waiting for interaction", e));
+
+            // Если уже было взаимодействие - играем сразу
+            if (hasInteracted) {
+                audio.play().catch(e => console.error("Autoplay error:", e));
+            }
 
             nextBtn.classList.remove('loading');
             nextBtn.innerText = 'След. ⏭️';
         }
 
-        // ГЛАВНАЯ МАГИЯ: Когда трек заканчивается, грузим следующий
         audio.addEventListener('ended', () => {
             console.log("Трек закончился, грузим следующий...");
             loadNextTrack();
@@ -126,11 +163,8 @@
             loadNextTrack();
         });
 
-        // Слушаем обновления от бота (бот будет закрывать и переоткрывать WebApp с новыми данными,
-        // или мы можем использовать более сложную схему с WebSocket, но для начала хватит перезапуска с новыми данными)
-        tg.onEvent('mainButtonClicked', () => {
-            // Резервный вариант
-        });
+        // Слушаем обновления от бота через Telegram Web App
+        tg.onEvent('mainButtonClicked', () => {});
     </script>
 </body>
 </html>
