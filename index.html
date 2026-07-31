@@ -56,7 +56,8 @@
             align-items: center; justify-content: center; z-index: 1000;
         }
         #startOverlay.hidden { display: none; }
-        .status { margin-top: 20px; font-size: 14px; opacity: 0.7; min-height: 20px; text-align: center; }
+        .status { margin-top: 20px; font-size: 14px; opacity: 0.7; min-height: 20px; text-align: center; color: #ff6b6b; }
+        .debug-info { margin-top: 10px; font-size: 12px; color: #888; word-break: break-all; max-width: 90vw; }
     </style>
 </head>
 <body>
@@ -82,6 +83,7 @@
         <button id="dislikeBtn" class="dislike">👎</button>
     </div>
     <div class="status" id="status"></div>
+    <div class="debug-info" id="debugInfo"></div>
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -99,6 +101,7 @@
         const startOverlay = document.getElementById('startOverlay');
         const startBtn = document.getElementById('startBtn');
         const statusEl = document.getElementById('status');
+        const debugEl = document.getElementById('debugInfo');
 
         let currentTrackData = null;
         let hasInteracted = false;
@@ -106,27 +109,32 @@
         let eventSource = null;
 
         function updateStatus(text) { statusEl.innerText = text; }
+        function debug(text) { debugEl.innerText = text; console.log(text); }
 
         function connectSSE(userId) {
             if (eventSource) eventSource.close();
 
-            // !!! ВСТАВЬ СЮДА СВОЙ АКТУАЛЬНЫЙ URL ОТ CLOUDFLARED !!!
-            const sseUrl = `https://corporation-penn-chance-colleague.trycloudflare.com/stream/${userId}`;
-            console.log("Подключаемся к SSE:", sseUrl);
+            // !!! ВСТАВЬ СЮДА ТОЧНО ТАКОЙ ЖЕ URL, КАК В wave.py !!!
+            const cloudflareUrl = "https://differences-terminal-identical-egg.trycloudflare.com";
+            const sseUrl = `${cloudflareUrl}/stream/${userId}`;
+            debug("Попытка SSE: " + sseUrl);
 
             eventSource = new EventSource(sseUrl);
 
-            eventSource.addEventListener('new_track', (event) => {
-                console.log("Получен new_track:", event.data);
-                const trackData = JSON.parse(event.data);
-                loadTrack(trackData, true);
-            });
+            eventSource.onopen = () => {
+                debug("✅ SSE соединен");
+                updateStatus("Соединение установлено");
+                setTimeout(() => { updateStatus(""); debug(""); }, 3000);
+            };
 
-            eventSource.addEventListener('error', (event) => {
+            eventSource.addEventListener('new_track', (event) => {
+                debug("🎵 Получен new_track");
                 try {
-                    const error = JSON.parse(event.data);
-                    updateStatus("Ошибка: " + error.message);
-                } catch (e) { updateStatus("Ошибка соединения"); }
+                    const trackData = JSON.parse(event.data);
+                    loadTrack(trackData, true);
+                } catch (e) {
+                    debug("Ошибка парсинга new_track: " + e.message);
+                }
             });
 
             eventSource.addEventListener('liked', () => {
@@ -134,15 +142,9 @@
                 setTimeout(() => updateStatus(""), 2000);
             });
 
-            eventSource.onopen = () => {
-                console.log("SSE соединение открыто");
-                updateStatus("Соединение установлено");
-                setTimeout(() => updateStatus(""), 2000);
-            };
-
             eventSource.onerror = (err) => {
-                console.error("SSE Error:", err);
-                updateStatus("Ошибка соединения");
+                debug("❌ SSE ошибка. Проверь URL в index.html");
+                updateStatus("Ошибка соединения с сервером");
             };
         }
 
@@ -157,7 +159,7 @@
                 isPlaying = true;
                 playBtn.innerText = '⏸️';
             }).catch(e => {
-                console.error("Play error:", e);
+                debug("Play error: " + e.message);
                 updateStatus("Ошибка: " + e.message);
             });
         }
@@ -194,14 +196,14 @@
         });
 
         audio.addEventListener('ended', () => {
-            console.log("Трек закончился");
+            debug("Трек закончился, запрашиваем следующий");
             updateStatus("Загружаю следующий...");
             loadNextTrack();
         });
 
         audio.addEventListener('error', (e) => {
-            console.error("Audio error:", e);
-            updateStatus("Ошибка загрузки трека");
+            debug("Audio error: " + audio.error.code);
+            updateStatus("Ошибка загрузки аудио");
             nextBtn.classList.remove('loading');
         });
 
@@ -225,20 +227,30 @@
         const dataParam = urlParams.get('data');
         const userIdParam = urlParams.get('user_id');
 
+        debug("URL params получены. data: " + (dataParam ? "OK" : "НЕТ") + ", user_id: " + (userIdParam || "НЕТ"));
+
         if (dataParam) {
             try {
-                // ИСПРАВЛЕННОЕ ДЕКОДИРОВАНИЕ URL-SAFE BASE64 + PADDING
                 let base64Fixed = dataParam.replace(/-/g, '+').replace(/_/g, '/');
                 while (base64Fixed.length % 4) { base64Fixed += '='; }
 
-                const trackData = JSON.parse(atob(base64Fixed));
+                const jsonStr = atob(base64Fixed);
+                debug("JSON расшифрован успешно");
+
+                const trackData = JSON.parse(jsonStr);
+                debug("Трек: " + trackData.artist + " - " + trackData.title);
+
                 loadTrack(trackData);
 
-                if (userIdParam) connectSSE(userIdParam);
+                if (userIdParam) {
+                    connectSSE(userIdParam);
+                } else {
+                    debug("⚠️ Нет user_id в URL!");
+                }
             } catch (e) {
-                console.error("Ошибка парсинга данных", e);
+                debug("❌ КРИТИЧЕСКАЯ ОШИБКА: " + e.message);
                 titleEl.innerText = "Ошибка загрузки";
-                artistEl.innerText = e.message;
+                artistEl.innerText = "Проверь консоль или URL";
             }
         } else {
             titleEl.innerText = "Открой через бота";
