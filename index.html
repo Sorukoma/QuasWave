@@ -112,25 +112,30 @@
 
         // Запрос следующего трека через HTTP API
         async function loadNextTrack() {
-            nextBtn.classList.add('loading');
-            updateStatus("Загрузка следующего...");
+    nextBtn.classList.add('loading');
+    updateStatus("Загрузка следующего...");
+    console.log("Запрос к API:", `${API_URL}/api/next_track?user_id=${userId}`);
 
-            try {
-                const response = await fetch(`${API_URL}/api/next_track?user_id=${userId}`);
-                const trackData = await response.json();
+    try {
+        const response = await fetch(`${API_URL}/api/next_track?user_id=${userId}`);
+        console.log("Status:", response.status);
 
-                if (trackData.error) {
-                    updateStatus("Ошибка: " + trackData.error);
-                } else {
-                    loadTrack(trackData, true);
-                }
-            } catch (e) {
-                console.error("Fetch error:", e);
-                updateStatus("Ошибка сети: " + e.message);
-            }
+        const trackData = await response.json();
+        console.log("Получены данные:", trackData);
 
-            nextBtn.classList.remove('loading');
+        if (trackData.error) {
+            updateStatus("Ошибка: " + trackData.error);
+        } else {
+            console.log("Вызов loadTrack...");
+            loadTrack(trackData, true);
         }
+    } catch (e) {
+        console.error("Fetch error:", e);
+        updateStatus("Ошибка сети: " + e.message);
+    }
+
+    nextBtn.classList.remove('loading');
+}
 
         // Лайк трека
         async function likeTrack() {
@@ -194,19 +199,45 @@
         });
 
         function loadTrack(trackData, isNew = false) {
-            currentTrackData = trackData;
-            titleEl.innerText = trackData.title;
-            artistEl.innerText = trackData.artist;
+    currentTrackData = trackData;
+    titleEl.innerText = trackData.title;
+    artistEl.innerText = trackData.artist;
 
-            if (isNew || audio.src !== trackData.file_url) {
-                audio.src = trackData.file_url;
-                progressBar.style.width = '0%';
-                if (hasInteracted) setTimeout(() => playAudio(), 100);
-            }
+    // Добавляем timestamp чтобы браузер не кэшировал
+    const cacheBuster = `?t=${Date.now()}`;
+    const newSrc = trackData.file_url + cacheBuster;
 
-            nextBtn.classList.remove('loading');
-            updateStatus("");
+    if (isNew || audio.src !== newSrc) {
+        console.log("Загрузка нового трека:", trackData.title);
+
+        // Останавливаем текущее воспроизведение
+        audio.pause();
+        audio.src = '';
+        audio.load();
+
+        // Устанавливаем новый источник
+        audio.src = newSrc;
+        progressBar.style.width = '0%';
+
+        // Автовоспроизведение если было взаимодействие
+        if (hasInteracted) {
+            console.log("Автовоспроизведение...");
+            setTimeout(() => {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    playBtn.innerText = '⏸️';
+                    updateStatus("");
+                }).catch(err => {
+                    console.error("Autoplay error:", err);
+                    updateStatus("Нажми Play для воспроизведения");
+                });
+            }, 100);
         }
+    }
+
+    nextBtn.classList.remove('loading');
+    updateStatus("");
+}
 
         const urlParams = new URLSearchParams(window.location.search);
         const dataParam = urlParams.get('data');
