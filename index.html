@@ -31,132 +31,47 @@
             font-size: 100px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .track-info {
-            text-align: center;
-            margin-bottom: 30px;
-            width: 100%;
-            padding: 0 20px;
-        }
-        .track-title {
-            font-size: clamp(18px, 5vw, 26px);
-            font-weight: bold;
-            margin-bottom: 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .track-artist {
-            font-size: clamp(14px, 4vw, 18px);
-            opacity: 0.7;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .progress-bar {
-            width: 100%;
-            max-width: 400px;
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-        .progress {
-            height: 100%;
-            background: #667eea;
-            width: 0%;
-            transition: width 0.1s;
-        }
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            align-items: center;
-            justify-items: center;
-            width: 100%;
-            max-width: 400px;
-            padding: 0 10px;
-        }
+        .track-info { text-align: center; margin-bottom: 30px; width: 100%; padding: 0 20px; }
+        .track-title { font-size: clamp(18px, 5vw, 26px); font-weight: bold; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .track-artist { font-size: clamp(14px, 4vw, 18px); opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .progress-bar { width: 100%; max-width: 400px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin-bottom: 30px; overflow: hidden; }
+        .progress { height: 100%; background: #667eea; width: 0%; transition: width 0.1s; }
+        .controls { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-items: center; justify-items: center; width: 100%; max-width: 400px; padding: 0 10px; }
         button {
-            background: rgba(255,255,255,0.1);
-            color: #ffffff;
-            border: none;
-            padding: 12px;
-            border-radius: 50%;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            backdrop-filter: blur(10px);
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: rgba(255,255,255,0.1); color: #ffffff; border: none;
+            padding: 12px; border-radius: 50%; font-size: 20px; font-weight: bold;
+            cursor: pointer; transition: all 0.2s; backdrop-filter: blur(10px);
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
         }
-        button:active {
-            transform: scale(0.9);
-            background: rgba(255,255,255,0.2);
-        }
+        button:active { transform: scale(0.9); background: rgba(255,255,255,0.2); }
         button.like { background: rgba(46, 204, 113, 0.3); }
         button.like.active { background: #2ecc71; }
         button.dislike { background: rgba(231, 76, 60, 0.3); }
-        button.play {
-            background: #667eea;
-            width: 70px;
-            height: 70px;
-            font-size: 28px;
-        }
-        .loading {
-            opacity: 0.5;
-            pointer-events: none;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 0.3; }
-        }
+        button.play { background: #667eea; width: 70px; height: 70px; font-size: 28px; }
+        .loading { opacity: 0.5; pointer-events: none; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
         #startOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 1000;
         }
         #startOverlay.hidden { display: none; }
-        .status {
-            margin-top: 20px;
-            font-size: 14px;
-            opacity: 0.7;
-            min-height: 20px;
-            text-align: center;
-        }
+        .status { margin-top: 20px; font-size: 14px; opacity: 0.7; min-height: 20px; text-align: center; }
     </style>
 </head>
 <body>
     <div id="startOverlay">
         <div class="cover">🎵</div>
         <h2 style="margin: 20px 0;">Готов слушать?</h2>
-        <button id="startBtn" style="padding: 20px 40px; font-size: 24px; background: #667eea; width: auto; height: auto;">▶️ Начать</button>
+        <button id="startBtn" style="padding: 20px 40px; font-size: 24px; background: #667eea; width: auto; height: auto; border-radius: 50px;">▶️ Начать</button>
     </div>
 
     <div class="cover">🎵</div>
-
     <div class="track-info">
         <div class="track-title" id="title">Загрузка...</div>
         <div class="track-artist" id="artist">Подожди немного</div>
     </div>
-
-    <div class="progress-bar">
-        <div class="progress" id="progressBar"></div>
-    </div>
-
+    <div class="progress-bar"><div class="progress" id="progressBar"></div></div>
     <audio id="audioPlayer" preload="auto"></audio>
 
     <div class="controls">
@@ -166,7 +81,6 @@
         <button id="nextBtn">⏭️</button>
         <button id="dislikeBtn" class="dislike">👎</button>
     </div>
-
     <div class="status" id="status"></div>
 
     <script>
@@ -191,21 +105,20 @@
         let isPlaying = false;
         let eventSource = null;
 
-        function updateStatus(text) {
-            statusEl.innerText = text;
-        }
+        function updateStatus(text) { statusEl.innerText = text; }
 
         function connectSSE(userId) {
-            if (eventSource) {
-                eventSource.close();
-            }
+            if (eventSource) eventSource.close();
 
-            // ЗАМЕНИ НА СВОЙ ВНЕШНИЙ IP
-            eventSource = new EventSource(`https://fitting-households-employ-careers.trycloudflare.com/stream/${userId}`);
+            // !!! ВСТАВЬ СЮДА СВОЙ АКТУАЛЬНЫЙ URL ОТ CLOUDFLARED !!!
+            const sseUrl = `https://corporation-penn-chance-colleague.trycloudflare.com/stream/${userId}`;
+            console.log("Подключаемся к SSE:", sseUrl);
+
+            eventSource = new EventSource(sseUrl);
 
             eventSource.addEventListener('new_track', (event) => {
+                console.log("Получен new_track:", event.data);
                 const trackData = JSON.parse(event.data);
-                console.log("Получен новый трек через SSE:", trackData);
                 loadTrack(trackData, true);
             });
 
@@ -213,9 +126,7 @@
                 try {
                     const error = JSON.parse(event.data);
                     updateStatus("Ошибка: " + error.message);
-                } catch (e) {
-                    updateStatus("Ошибка соединения");
-                }
+                } catch (e) { updateStatus("Ошибка соединения"); }
             });
 
             eventSource.addEventListener('liked', () => {
@@ -223,19 +134,22 @@
                 setTimeout(() => updateStatus(""), 2000);
             });
 
-            eventSource.onerror = (err) => {
-                console.error("SSE Error:", err);
+            eventSource.onopen = () => {
+                console.log("SSE соединение открыто");
+                updateStatus("Соединение установлено");
+                setTimeout(() => updateStatus(""), 2000);
             };
 
-            console.log("SSE подключен для user_id:", userId);
+            eventSource.onerror = (err) => {
+                console.error("SSE Error:", err);
+                updateStatus("Ошибка соединения");
+            };
         }
 
         startBtn.addEventListener('click', () => {
             hasInteracted = true;
             startOverlay.classList.add('hidden');
-            if (audio.src && audio.src !== window.location.href) {
-                playAudio();
-            }
+            if (audio.src && audio.src !== window.location.href) playAudio();
         });
 
         function playAudio() {
@@ -254,51 +168,29 @@
             playBtn.innerText = '▶️';
         }
 
-        playBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                pauseAudio();
-            } else {
-                playAudio();
-            }
-        });
+        playBtn.addEventListener('click', () => { isPlaying ? pauseAudio() : playAudio(); });
 
         likeBtn.addEventListener('click', () => {
             likeBtn.classList.toggle('active');
-            tg.sendData(JSON.stringify({
-                action: "like",
-                track: currentTrackData
-            }));
+            tg.sendData(JSON.stringify({ action: "like", track: currentTrackData }));
         });
 
         dislikeBtn.addEventListener('click', () => {
             updateStatus("👎 Пропускаем...");
-            tg.sendData(JSON.stringify({
-                action: "dislike",
-                track: currentTrackData
-            }));
+            tg.sendData(JSON.stringify({ action: "dislike", track: currentTrackData }));
         });
 
         function loadNextTrack() {
             nextBtn.classList.add('loading');
-            updateStatus("Загрузка следующего трека...");
+            updateStatus("Загрузка следующего...");
             tg.sendData(JSON.stringify({ action: "get_next_track" }));
         }
 
-        nextBtn.addEventListener('click', () => {
-            if (isPlaying) pauseAudio();
-            loadNextTrack();
-        });
-
-        prevBtn.addEventListener('click', () => {
-            updateStatus("Предыдущий трек пока не поддерживается");
-            setTimeout(() => updateStatus(""), 2000);
-        });
+        nextBtn.addEventListener('click', () => { if (isPlaying) pauseAudio(); loadNextTrack(); });
+        prevBtn.addEventListener('click', () => { updateStatus("Пока не поддерживается"); setTimeout(() => updateStatus(""), 2000); });
 
         audio.addEventListener('timeupdate', () => {
-            if (audio.duration) {
-                const progress = (audio.currentTime / audio.duration) * 100;
-                progressBar.style.width = progress + '%';
-            }
+            if (audio.duration) progressBar.style.width = ((audio.currentTime / audio.duration) * 100) + '%';
         });
 
         audio.addEventListener('ended', () => {
@@ -321,10 +213,7 @@
             if (isNew || audio.src !== trackData.file_url) {
                 audio.src = trackData.file_url;
                 progressBar.style.width = '0%';
-
-                if (hasInteracted) {
-                    setTimeout(() => playAudio(), 100);
-                }
+                if (hasInteracted) setTimeout(() => playAudio(), 100);
             }
 
             nextBtn.classList.remove('loading');
@@ -338,14 +227,14 @@
 
         if (dataParam) {
             try {
-                // URL-safe base64 decoding
-                const base64Fixed = dataParam.replace(/-/g, '+').replace(/_/g, '/');
+                // ИСПРАВЛЕННОЕ ДЕКОДИРОВАНИЕ URL-SAFE BASE64 + PADDING
+                let base64Fixed = dataParam.replace(/-/g, '+').replace(/_/g, '/');
+                while (base64Fixed.length % 4) { base64Fixed += '='; }
+
                 const trackData = JSON.parse(atob(base64Fixed));
                 loadTrack(trackData);
 
-                if (userIdParam) {
-                    connectSSE(userIdParam);
-                }
+                if (userIdParam) connectSSE(userIdParam);
             } catch (e) {
                 console.error("Ошибка парсинга данных", e);
                 titleEl.innerText = "Ошибка загрузки";
