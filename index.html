@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <!-- ФИКС №1: charset самым первым тегом, иначе кириллица поедет -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>QuasWave Player</title>
@@ -23,9 +22,16 @@
       --line:rgba(89,224,200,.22);
     }
 
-    *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      -webkit-tap-highlight-color:transparent;
+    }
 
-    html,body{ height:100%; }
+    html,body{
+      height:100%;
+    }
 
     body{
       min-height:100dvh;
@@ -39,70 +45,131 @@
       user-select:none;
     }
 
-    /* ---------- фоновые слои ---------- */
-    .bg{ position:fixed; inset:0; pointer-events:none; z-index:0; }
+    .bg{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+    }
+
     .bg::before{
-      content:""; position:absolute; width:70vmax; height:70vmax;
-      left:-25vmax; top:-30vmax;
+      content:"";
+      position:absolute;
+      width:70vmax;
+      height:70vmax;
+      left:-25vmax;
+      top:-30vmax;
       background:radial-gradient(circle, rgba(255,122,89,.13), transparent 62%);
     }
+
     .bg::after{
-      content:""; position:absolute; width:70vmax; height:70vmax;
-      right:-25vmax; bottom:-30vmax;
+      content:"";
+      position:absolute;
+      width:70vmax;
+      height:70vmax;
+      right:-25vmax;
+      bottom:-30vmax;
       background:radial-gradient(circle, rgba(89,224,200,.11), transparent 62%);
     }
+
     .noise{
-      position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.05;
+      position:fixed;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      opacity:.05;
       background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2"/></filter><rect width="120" height="120" filter="url(%23n)" opacity="0.7"/></svg>');
     }
 
-    /* ---------- каркас ---------- */
     .app{
-      position:relative; z-index:2;
+      position:relative;
+      z-index:2;
       width:min(430px, 100%);
       min-height:100dvh;
       padding:calc(18px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom));
-      display:flex; flex-direction:column; gap:18px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
     }
 
-    .top{ display:flex; align-items:center; justify-content:space-between; }
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
 
     .logo{
       font-family:"Unbounded", sans-serif;
-      font-weight:900; font-size:17px; letter-spacing:.14em;
-      display:flex; align-items:center; gap:10px;
+      font-weight:900;
+      font-size:17px;
+      letter-spacing:.14em;
+      display:flex;
+      align-items:center;
+      gap:10px;
     }
-    .logo span{ color:var(--gold); }
-    .logo .eq{ display:flex; align-items:flex-end; gap:2px; height:14px; }
+
+    .logo span{
+      color:var(--gold);
+    }
+
+    .logo .eq{
+      display:flex;
+      align-items:flex-end;
+      gap:2px;
+      height:14px;
+    }
+
     .logo .eq i{
-      width:3px; border-radius:2px; background:var(--teal);
+      width:3px;
+      border-radius:2px;
+      background:var(--teal);
       animation:eq 1.1s ease-in-out infinite;
+      transform-origin:bottom;
     }
+
     .logo .eq i:nth-child(1){ height:60%; animation-delay:0s; }
     .logo .eq i:nth-child(2){ height:100%; animation-delay:.15s; }
     .logo .eq i:nth-child(3){ height:45%; animation-delay:.3s; }
     .logo .eq i:nth-child(4){ height:80%; animation-delay:.45s; }
 
     .badge{
-      font-size:10px; font-weight:800; letter-spacing:.18em; text-transform:uppercase;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:.18em;
+      text-transform:uppercase;
       color:var(--muted);
       border:1px solid var(--line);
       border-radius:999px;
       padding:6px 12px;
     }
-    .badge b{ color:var(--coral); }
 
-    /* ---------- сцена с пластинкой ---------- */
+    .badge b{
+      color:var(--coral);
+    }
+
     .stage{
       position:relative;
-      display:flex; flex-direction:column; align-items:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
       padding:14px 0 4px;
     }
 
-    .rings{ position:absolute; top:118px; left:50%; width:0; height:0; z-index:0; }
+    .rings{
+      position:absolute;
+      top:118px;
+      left:50%;
+      width:0;
+      height:0;
+      z-index:0;
+    }
+
     .rings i{
-      position:absolute; left:50%; top:50%;
-      width:230px; height:230px;
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:230px;
+      height:230px;
       margin:-115px 0 0 -115px;
       border:1px solid rgba(89,224,200,.28);
       border-radius:50%;
@@ -110,45 +177,77 @@
       animation:ring 3.9s cubic-bezier(.2,.6,.35,1) infinite;
       animation-play-state:paused;
     }
+
     .rings i:nth-child(2){ animation-delay:1.3s; }
     .rings i:nth-child(3){ animation-delay:2.6s; }
-    body.playing .rings i{ animation-play-state:running; }
+
+    body.playing .rings i{
+      animation-play-state:running;
+    }
 
     .disc{
-      position:relative; z-index:1;
-      width:216px; height:216px; border-radius:50%;
+      position:relative;
+      z-index:1;
+      width:216px;
+      height:216px;
+      border-radius:50%;
       background:
         radial-gradient(circle at 34% 28%, rgba(255,255,255,.10), transparent 42%),
         repeating-radial-gradient(circle, #132a31 0 2px, #0b1c21 2px 4.5px);
       border:1px solid rgba(255,255,255,.07);
       box-shadow:0 24px 60px rgba(0,0,0,.55), inset 0 0 0 10px rgba(0,0,0,.25);
-      display:flex; align-items:center; justify-content:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       animation:spin 11s linear infinite;
       animation-play-state:paused;
     }
-    body.playing .disc{ animation-play-state:running; }
+
+    body.playing .disc{
+      animation-play-state:running;
+    }
 
     .disc-label{
-      width:76px; height:76px; border-radius:50%;
+      width:76px;
+      height:76px;
+      border-radius:50%;
       background:radial-gradient(circle at 35% 30%, var(--gold), var(--coral) 78%);
-      display:flex; align-items:center; justify-content:center;
-      font-family:"Unbounded", sans-serif; font-weight:900; font-size:20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:"Unbounded", sans-serif;
+      font-weight:900;
+      font-size:20px;
       color:#241008;
       box-shadow:0 0 0 6px rgba(0,0,0,.35);
       position:relative;
     }
+
     .disc-label::after{
-      content:""; position:absolute; width:10px; height:10px; border-radius:50%;
-      background:var(--bg1); box-shadow:inset 0 0 3px #000;
+      content:"";
+      position:absolute;
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--bg1);
+      box-shadow:inset 0 0 3px #000;
     }
 
     #viz{
-      width:100%; height:88px; margin-top:14px;
+      width:100%;
+      height:88px;
+      margin-top:14px;
       display:block;
     }
 
-    /* ---------- мета трека ---------- */
-    .meta{ text-align:center; min-height:74px; display:flex; flex-direction:column; justify-content:center; gap:7px; }
+    .meta{
+      text-align:center;
+      min-height:74px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:7px;
+    }
 
     .track{
       font-family:"Unbounded", sans-serif;
@@ -158,148 +257,273 @@
       letter-spacing:.01em;
       transition:opacity .25s ease, transform .25s ease;
     }
-    .track.swap{ opacity:0; transform:translateY(8px); }
+
+    .track.swap{
+      opacity:0;
+      transform:translateY(8px);
+    }
 
     .artist{
-      font-size:13px; font-weight:800;
-      letter-spacing:.22em; text-transform:uppercase;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.22em;
+      text-transform:uppercase;
       color:var(--muted);
     }
 
-    /* ---------- прогресс ---------- */
-    .progress{ display:flex; flex-direction:column; gap:8px; }
+    .progress{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
 
     .bar{
-      position:relative; height:26px;
-      display:flex; align-items:center; cursor:pointer;
+      position:relative;
+      height:26px;
+      display:flex;
+      align-items:center;
+      cursor:pointer;
       touch-action:none;
     }
+
     .bar::before{
-      content:""; position:absolute; left:0; right:0; height:6px; border-radius:999px;
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      height:6px;
+      border-radius:999px;
       background:rgba(255,255,255,.12);
     }
+
     .fill{
-      position:absolute; left:0; height:6px; border-radius:999px; width:0%;
+      position:absolute;
+      left:0;
+      height:6px;
+      border-radius:999px;
+      width:0%;
       background:linear-gradient(90deg, var(--teal), var(--gold) 60%, var(--coral));
       box-shadow:0 0 12px rgba(255,196,107,.45);
       transition:width .15s linear;
     }
+
     .knob{
-      position:absolute; width:14px; height:14px; border-radius:50%;
+      position:absolute;
+      width:14px;
+      height:14px;
+      border-radius:50%;
       background:var(--ink);
       box-shadow:0 2px 8px rgba(0,0,0,.5);
       transform:translateX(-50%) scale(0);
       transition:transform .15s ease;
       pointer-events:none;
     }
-    .bar:hover .knob, .bar.active .knob{ transform:translateX(-50%) scale(1); }
 
-    .times{ display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; }
+    .bar:hover .knob,
+    .bar.active .knob{
+      transform:translateX(-50%) scale(1);
+    }
 
-    /* ---------- кнопки ---------- */
+    .times{
+      display:flex;
+      justify-content:space-between;
+      font-size:12px;
+      font-weight:600;
+      color:var(--muted);
+      font-variant-numeric:tabular-nums;
+    }
+
     .controls{
-      display:flex; align-items:center; justify-content:center;
-      gap:16px; margin-top:2px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:16px;
+      margin-top:2px;
     }
 
     .controls button{
-      border:0; cursor:pointer;
-      width:58px; height:58px; border-radius:50%;
+      border:0;
+      cursor:pointer;
+      width:58px;
+      height:58px;
+      border-radius:50%;
       background:var(--panel);
       border:1px solid var(--line);
       color:var(--ink);
       font-size:22px;
-      display:flex; align-items:center; justify-content:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       transition:transform .12s ease, box-shadow .2s ease, background .2s ease;
       touch-action:manipulation;
     }
-    .controls button:hover{ transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,.4); }
-    .controls button:active{ transform:scale(.9); }
+
+    .controls button:hover{
+      transform:translateY(-3px);
+      box-shadow:0 10px 24px rgba(0,0,0,.4);
+    }
+
+    .controls button:active{
+      transform:scale(.9);
+    }
 
     .controls .primary{
-      width:80px; height:80px; font-size:28px;
+      width:80px;
+      height:80px;
+      font-size:28px;
       background:radial-gradient(circle at 32% 28%, var(--gold), var(--coral) 80%);
       color:#241008;
       border:none;
       box-shadow:0 14px 34px rgba(255,122,89,.35);
     }
-    .controls .primary:hover{ box-shadow:0 18px 44px rgba(255,122,89,.5); }
 
-    .controls button.pop{ animation:pop .55s ease; }
+    .controls .primary:hover{
+      box-shadow:0 18px 44px rgba(255,122,89,.5);
+    }
 
-    /* ---------- оверлеи ---------- */
+    .controls button.pop{
+      animation:pop .55s ease;
+    }
+
     .overlay{
-      position:fixed; inset:0; z-index:20;
+      position:fixed;
+      inset:0;
+      z-index:20;
       background:rgba(6,14,17,.86);
-      display:flex; align-items:center; justify-content:center;
-      opacity:0; pointer-events:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      opacity:0;
+      pointer-events:none;
       transition:opacity .3s ease;
     }
-    .overlay.show{ opacity:1; pointer-events:auto; }
 
-    .start-inner{ text-align:center; display:flex; flex-direction:column; align-items:center; gap:22px; padding:24px; }
+    .overlay.show{
+      opacity:1;
+      pointer-events:auto;
+    }
 
-    .logo.big{ font-size:26px; }
+    .start-inner{
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:22px;
+      padding:24px;
+    }
+
+    .logo.big{
+      font-size:26px;
+    }
 
     .start-q{
-      font-family:"Unbounded", sans-serif; font-weight:700;
+      font-family:"Unbounded", sans-serif;
+      font-weight:700;
       font-size:clamp(20px, 6vw, 27px);
     }
 
     .disc-start{
-      position:relative; border:0; cursor:pointer;
-      width:170px; height:170px; border-radius:50%;
+      position:relative;
+      border:0;
+      cursor:pointer;
+      width:170px;
+      height:170px;
+      border-radius:50%;
       background:repeating-radial-gradient(circle, #16333b 0 2px, #0c1e24 2px 5px);
       box-shadow:0 24px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
-      display:flex; align-items:center; justify-content:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       transition:transform .15s ease;
       touch-action:manipulation;
     }
-    .disc-start:hover{ transform:scale(1.04); }
-    .disc-start:active{ transform:scale(.95); }
+
+    .disc-start:hover{
+      transform:scale(1.04);
+    }
+
+    .disc-start:active{
+      transform:scale(.95);
+    }
+
     .disc-start .grooves{
-      position:absolute; inset:0; border-radius:50%;
+      position:absolute;
+      inset:0;
+      border-radius:50%;
       background:conic-gradient(from 0deg, transparent 0 40deg, rgba(255,255,255,.06) 60deg, transparent 90deg 360deg);
       animation:spin 7s linear infinite;
     }
+
     .disc-start .center{
-      position:relative; z-index:1;
-      width:74px; height:74px; border-radius:50%;
+      position:relative;
+      z-index:1;
+      width:74px;
+      height:74px;
+      border-radius:50%;
       background:radial-gradient(circle at 34% 28%, var(--gold), var(--coral) 80%);
-      display:flex; align-items:center; justify-content:center;
-      font-size:28px; color:#241008;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      color:#241008;
       padding-left:5px;
       box-shadow:0 10px 30px rgba(255,122,89,.45);
     }
 
-    .hint{ font-size:13px; font-weight:600; color:var(--muted); letter-spacing:.06em; }
+    .hint{
+      font-size:13px;
+      font-weight:600;
+      color:var(--muted);
+      letter-spacing:.06em;
+    }
 
-    .loading-inner{ text-align:center; display:flex; flex-direction:column; align-items:center; gap:20px; }
+    .loading-inner{
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:20px;
+    }
 
-    .eq{ display:flex; align-items:flex-end; gap:6px; height:44px; }
+    .eq{
+      display:flex;
+      align-items:flex-end;
+      gap:6px;
+      height:44px;
+    }
+
     .eq i{
-      width:7px; border-radius:4px;
+      width:7px;
+      border-radius:4px;
       background:linear-gradient(180deg, var(--teal), var(--gold));
       animation:eq 0.9s ease-in-out infinite;
+      transform-origin:bottom;
     }
+
     .eq i:nth-child(1){ height:40%; animation-delay:0s; }
     .eq i:nth-child(2){ height:80%; animation-delay:.12s; }
     .eq i:nth-child(3){ height:100%; animation-delay:.24s; }
     .eq i:nth-child(4){ height:65%; animation-delay:.36s; }
     .eq i:nth-child(5){ height:45%; animation-delay:.48s; }
 
-    .loading-text{ font-size:15px; font-weight:600; color:var(--muted); }
+    .loading-text{
+      font-size:15px;
+      font-weight:600;
+      color:var(--muted);
+    }
 
-    /* ---------- toast ---------- */
     .toast{
-      position:fixed; left:50%; bottom:calc(26px + env(safe-area-inset-bottom));
+      position:fixed;
+      left:50%;
+      bottom:calc(26px + env(safe-area-inset-bottom));
       transform:translate(-50%, 80px);
       z-index:30;
       background:#173a41;
       border:1px solid var(--line);
       border-left:4px solid var(--coral);
       color:var(--ink);
-      font-size:14px; font-weight:600;
+      font-size:14px;
+      font-weight:600;
       padding:12px 18px;
       border-radius:10px;
       box-shadow:0 14px 34px rgba(0,0,0,.5);
@@ -307,18 +531,24 @@
       transition:transform .3s cubic-bezier(.2,.9,.3,1.2), opacity .3s ease;
       max-width:88%;
     }
-    .toast.show{ transform:translate(-50%, 0); opacity:1; }
 
-    audio{ display:none; }
+    .toast.show{
+      transform:translate(-50%, 0);
+      opacity:1;
+    }
 
-    /* ---------- анимации ---------- */
-    @keyframes spin{ to{ transform:rotate(360deg); } }
+    audio{
+      display:none;
+    }
+
+    @keyframes spin{
+      to{ transform:rotate(360deg); }
+    }
 
     @keyframes eq{
       0%,100%{ transform:scaleY(.45); }
       50%{ transform:scaleY(1); }
     }
-    .eq i, .logo .eq i{ transform-origin:bottom; }
 
     @keyframes ring{
       0%{ transform:scale(.55); opacity:.55; }
@@ -377,7 +607,6 @@
     </section>
   </main>
 
-  <!-- стартовый экран (нужен ещё и для autoplay-политики браузеров) -->
   <div class="overlay start show" id="startOverlay">
     <div class="start-inner">
       <div class="logo big">QUAS<span>WAVE</span></div>
@@ -390,7 +619,6 @@
     </div>
   </div>
 
-  <!-- лоадер -->
   <div class="overlay loading" id="loadingOverlay">
     <div class="loading-inner">
       <div class="eq"><i></i><i></i><i></i><i></i><i></i></div>
@@ -400,27 +628,38 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- crossorigin ОБЯЗАТЕЛЕН, иначе WebAudio-визуализатор не получит данные -->
   <audio id="audio" crossorigin="anonymous" preload="auto"></audio>
 
   <script>
     "use strict";
 
-    /* ============================================================
-       КОНФИГ. Должен совпадать с EXTERNAL_URL в wave.py, блядь.
-       Перезапустил cloudflared — поменял URL и тут, и там.
-    ============================================================ */
+    // ВАЖНО:
+    // Этот URL должен совпадать с EXTERNAL_URL в wave.py.
+    // Перезапустил cloudflared -> поменял URL и тут, и там.
     const API_BASE = "https://differences-terminal-identical-egg.trycloudflare.com";
 
-    /* ---------- Telegram WebApp ---------- */
+    // Если true — визуализатор будет честный, через WebAudio.
+    // Но на Safari / Telegram WebView это иногда мьютит звук.
+    // Пока false: псевдо-волна тоже живая, зато звук стабильнее.
+    const USE_REAL_VIZ = false;
+
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+
     if (tg) {
       try {
         tg.ready();
         tg.expand();
-        if (tg.setHeaderColor) tg.setHeaderColor("#0d2027");
-        if (tg.setBackgroundColor) tg.setBackgroundColor("#0d2027");
-      } catch (e) { console.warn("tg init:", e); }
+
+        if (tg.setHeaderColor) {
+          tg.setHeaderColor("#0d2027");
+        }
+
+        if (tg.setBackgroundColor) {
+          tg.setBackgroundColor("#0d2027");
+        }
+      } catch (e) {
+        console.warn("tg init:", e);
+      }
     }
 
     function haptic(type) {
@@ -431,25 +670,24 @@
       } catch (e) {}
     }
 
-    /* ---------- DOM ---------- */
-    const audio        = document.getElementById("audio");
-    const titleEl      = document.getElementById("title");
-    const artistEl     = document.getElementById("artist");
-    const playBtn      = document.getElementById("playBtn");
-    const nextBtn      = document.getElementById("nextBtn");
-    const likeBtn      = document.getElementById("likeBtn");
-    const dislikeBtn   = document.getElementById("dislikeBtn");
-    const bar          = document.getElementById("bar");
-    const fill         = document.getElementById("fill");
-    const knob         = document.getElementById("knob");
-    const curEl        = document.getElementById("cur");
-    const durEl        = document.getElementById("dur");
+    const audio = document.getElementById("audio");
+    const titleEl = document.getElementById("title");
+    const artistEl = document.getElementById("artist");
+    const playBtn = document.getElementById("playBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const likeBtn = document.getElementById("likeBtn");
+    const dislikeBtn = document.getElementById("dislikeBtn");
+    const bar = document.getElementById("bar");
+    const fill = document.getElementById("fill");
+    const knob = document.getElementById("knob");
+    const curEl = document.getElementById("cur");
+    const durEl = document.getElementById("dur");
     const startOverlay = document.getElementById("startOverlay");
-    const startBtn     = document.getElementById("startBtn");
-    const loadingOv    = document.getElementById("loadingOverlay");
-    const toastEl      = document.getElementById("toast");
-    const viz          = document.getElementById("viz");
-    const vctx         = viz.getContext("2d");
+    const startBtn = document.getElementById("startBtn");
+    const loadingOv = document.getElementById("loadingOverlay");
+    const toastEl = document.getElementById("toast");
+    const viz = document.getElementById("viz");
+    const vctx = viz.getContext("2d");
 
     let userId = null;
     let initialTrack = null;
@@ -457,24 +695,28 @@
     let isLoading = false;
     let isSeeking = false;
     let toastTimer = null;
+    let waitingTimer = null;
 
-    /* ============================================================
-       ФИКС №2: правильное декодирование base64 из URL.
-       atob() сам по себе ломает кириллицу. Сначала в байты,
-       потом TextDecoder("utf-8") — и никаких кракозябр.
-    ============================================================ */
     function b64UrlDecode(input) {
       let s = String(input).replace(/-/g, "+").replace(/_/g, "/");
-      while (s.length % 4) s += "=";
+
+      while (s.length % 4) {
+        s += "=";
+      }
+
       const binary = atob(s);
       const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+
       return new TextDecoder("utf-8").decode(bytes);
     }
 
-    /* ---------- разбор URL ---------- */
     (function parseUrl() {
       const params = new URLSearchParams(window.location.search);
+
       userId = params.get("user_id");
       const dataParam = params.get("data");
 
@@ -482,7 +724,10 @@
         try {
           initialTrack = JSON.parse(b64UrlDecode(dataParam));
           console.log("Initial track:", initialTrack);
-          if (initialTrack && initialTrack.user_id) userId = String(initialTrack.user_id);
+
+          if (initialTrack && initialTrack.user_id) {
+            userId = String(initialTrack.user_id);
+          }
         } catch (e) {
           console.error("Не удалось разобрать data:", e);
         }
@@ -495,7 +740,6 @@
       console.log("userId:", userId);
     })();
 
-    /* ---------- утилиты ---------- */
     function fmt(s) {
       if (!isFinite(s)) return "0:00";
       s = Math.floor(s);
@@ -505,20 +749,21 @@
     function toast(msg) {
       toastEl.textContent = msg;
       toastEl.classList.add("show");
+
       if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
+
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove("show");
+      }, 2600);
     }
 
     function showLoading(on) {
       loadingOv.classList.toggle("show", !!on);
     }
 
-    /* ============================================================
-       ФИКС №3: название ставим через textContent (не innerHTML),
-       а JSON с бэка парсим с проверкой, а не вслепую.
-    ============================================================ */
     function setTrack(artist, title) {
       titleEl.classList.add("swap");
+
       setTimeout(() => {
         titleEl.textContent = title || "Без названия";
         artistEl.textContent = artist || "Неизвестный артист";
@@ -527,31 +772,32 @@
       }, 180);
     }
 
-    /* ============================================================
-       ФИКС №4: fetch с нормальной обработкой ошибок.
-       Сначала text(), потом JSON.parse — если бэк вернул
-       HTML с ошибкой или кракозябры, мы это увидим в консоли.
-    ============================================================ */
     async function loadNextTrack() {
       if (!userId) {
         toast("Нет user_id. Открой плеер из бота.");
         return;
       }
+
       if (isLoading) return;
+
       isLoading = true;
       showLoading(true);
 
       try {
         const url = API_BASE + "/api/next_track?user_id=" + encodeURIComponent(userId);
+
         const response = await fetch(url, {
           method: "GET",
           cache: "no-store",
-          headers: { "Accept": "application/json" }
+          headers: {
+            "Accept": "application/json"
+          }
         });
 
         const text = await response.text();
 
         let data;
+
         try {
           data = JSON.parse(text);
         } catch (e) {
@@ -563,8 +809,10 @@
         }
 
         setTrack(data.artist, data.title);
+
         audio.src = data.file_url;
         audio.load();
+
         await playAudio();
 
       } catch (err) {
@@ -578,7 +826,10 @@
 
     async function playAudio() {
       try {
-        if (audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
+        if (audioCtx && audioCtx.state === "suspended") {
+          await audioCtx.resume();
+        }
+
         await audio.play();
       } catch (err) {
         console.warn("play() error:", err);
@@ -590,50 +841,66 @@
       audio.pause();
     }
 
-    /* ---------- лайк ---------- */
     async function sendLike() {
-      if (!userId) { toast("Нет user_id."); return; }
+      if (!userId) {
+        toast("Нет user_id.");
+        return;
+      }
+
       try {
         const url = API_BASE + "/api/like?user_id=" + encodeURIComponent(userId);
-        const response = await fetch(url, { method: "POST", cache: "no-store" });
+
+        const response = await fetch(url, {
+          method: "POST",
+          cache: "no-store"
+        });
+
         const text = await response.text();
 
         let data;
-        try { data = JSON.parse(text); }
-        catch (e) { throw new Error("Backend вернул не JSON: " + text.slice(0, 160)); }
 
-        if (!response.ok) throw new Error(data.error || ("HTTP " + response.status));
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error("Backend вернул не JSON: " + text.slice(0, 160));
+        }
+
+        if (!response.ok) {
+          throw new Error(data.error || ("HTTP " + response.status));
+        }
 
         likeBtn.classList.remove("pop");
-        void likeBtn.offsetWidth; /* перезапуск анимации */
+        void likeBtn.offsetWidth;
         likeBtn.classList.add("pop");
+
         haptic("medium");
         toast("👍 Добавлено в лайки");
+
       } catch (err) {
         console.error("like error:", err);
         toast("❌ " + (err.message || "Не удалось сохранить лайк"));
       }
     }
 
-    /* ============================================================
-       ВИЗУАЛИЗАТОР. WebAudio + AnalyserNode.
-       Если CORS/контекст не завелись — рисуем псевдо-волну,
-       чтобы экран не был мёртвым.
-    ============================================================ */
     let audioCtx = null;
     let analyser = null;
     let dataArr = null;
 
     function ensureAnalyser() {
+      if (!USE_REAL_VIZ) return;
       if (analyser) return;
+
       try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const src = audioCtx.createMediaElementSource(audio);
+
         analyser = audioCtx.createAnalyser();
         analyser.fftSize = 128;
         analyser.smoothingTimeConstant = 0.82;
+
         src.connect(analyser);
         analyser.connect(audioCtx.destination);
+
         dataArr = new Uint8Array(analyser.frequencyBinCount);
       } catch (e) {
         console.warn("WebAudio недоступен, включаю псевдо-волну:", e);
@@ -647,21 +914,27 @@
       viz.height = viz.clientHeight * dpr;
       vctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
+
     window.addEventListener("resize", sizeViz);
     sizeViz();
 
     function mix(a, b, t) {
-      const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+      const pa = parseInt(a.slice(1), 16);
+      const pb = parseInt(b.slice(1), 16);
+
       const r = Math.round(((pa >> 16) & 255) * (1 - t) + ((pb >> 16) & 255) * t);
       const g = Math.round(((pa >> 8) & 255) * (1 - t) + ((pb >> 8) & 255) * t);
       const bl = Math.round((pa & 255) * (1 - t) + (pb & 255) * t);
+
       return "rgb(" + r + "," + g + "," + bl + ")";
     }
 
     function drawViz() {
       requestAnimationFrame(drawViz);
 
-      const w = viz.clientWidth, h = viz.clientHeight;
+      const w = viz.clientWidth;
+      const h = viz.clientHeight;
+
       vctx.clearRect(0, 0, w, h);
 
       const bars = 52;
@@ -671,8 +944,10 @@
 
       for (let i = 0; i < bars; i++) {
         let v;
+
         if (analyser && dataArr) {
           if (i === 0) analyser.getByteFrequencyData(dataArr);
+
           const step = Math.max(1, Math.floor(dataArr.length / bars));
           v = dataArr[i * step] / 255;
         } else {
@@ -682,6 +957,7 @@
         }
 
         v = Math.max(0.045, v);
+
         const bh = v * h;
         const x = i * (bw + gap);
         const y = h - bh;
@@ -692,14 +968,19 @@
           : mix("#ffc46b", "#ff7a59", (hue - 0.5) * 2);
 
         vctx.beginPath();
-        if (vctx.roundRect) vctx.roundRect(x, y, bw, bh, Math.min(3, bw / 2));
-        else vctx.rect(x, y, bw, bh);
+
+        if (vctx.roundRect) {
+          vctx.roundRect(x, y, bw, bh, Math.min(3, bw / 2));
+        } else {
+          vctx.rect(x, y, bw, bh);
+        }
+
         vctx.fill();
       }
     }
+
     drawViz();
 
-    /* ---------- события аудио ---------- */
     audio.addEventListener("play", () => {
       playing = true;
       document.body.classList.add("playing");
@@ -716,17 +997,44 @@
       durEl.textContent = fmt(audio.duration);
     });
 
+    audio.addEventListener("durationchange", () => {
+      durEl.textContent = fmt(audio.duration);
+    });
+
     audio.addEventListener("timeupdate", () => {
       if (isSeeking || !isFinite(audio.duration) || audio.duration <= 0) return;
+
       const pct = (audio.currentTime / audio.duration) * 100;
+
       fill.style.width = pct + "%";
       knob.style.left = pct + "%";
       curEl.textContent = fmt(audio.currentTime);
     });
 
-    audio.addEventListener("waiting", () => { if (playing) showLoading(true); });
-    audio.addEventListener("playing", () => showLoading(false));
-    audio.addEventListener("canplay", () => showLoading(false));
+    audio.addEventListener("waiting", () => {
+      if (!playing) return;
+
+      if (waitingTimer) clearTimeout(waitingTimer);
+
+      waitingTimer = setTimeout(() => {
+        showLoading(true);
+      }, 350);
+    });
+
+    audio.addEventListener("playing", () => {
+      if (waitingTimer) clearTimeout(waitingTimer);
+      showLoading(false);
+    });
+
+    audio.addEventListener("canplay", () => {
+      if (waitingTimer) clearTimeout(waitingTimer);
+      if (!audio.paused) showLoading(false);
+    });
+
+    audio.addEventListener("seeked", () => {
+      if (waitingTimer) clearTimeout(waitingTimer);
+      if (!audio.paused) showLoading(false);
+    });
 
     audio.addEventListener("ended", () => {
       console.log("Трек закончился — грузим следующий");
@@ -735,37 +1043,64 @@
 
     audio.addEventListener("error", () => {
       showLoading(false);
-      if (audio.src) toast("❌ Не удалось воспроизвести аудио");
+
+      if (audio.src) {
+        toast("❌ Не удалось воспроизвести аудио");
+      }
     });
 
-    /* ---------- перемотка ---------- */
     function seekFromEvent(e) {
       const rect = bar.getBoundingClientRect();
       const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+
       fill.style.width = (ratio * 100) + "%";
       knob.style.left = (ratio * 100) + "%";
+
       if (isFinite(audio.duration) && audio.duration > 0) {
         audio.currentTime = ratio * audio.duration;
       }
+
       curEl.textContent = fmt(ratio * (audio.duration || 0));
     }
 
     bar.addEventListener("pointerdown", (e) => {
       isSeeking = true;
       bar.classList.add("active");
-      try { bar.setPointerCapture(e.pointerId); } catch (err) {}
+
+      try {
+        bar.setPointerCapture(e.pointerId);
+      } catch (err) {}
+
       seekFromEvent(e);
     });
-    bar.addEventListener("pointermove", (e) => { if (isSeeking) seekFromEvent(e); });
-    bar.addEventListener("pointerup", () => { isSeeking = false; bar.classList.remove("active"); });
-    bar.addEventListener("pointercancel", () => { isSeeking = false; bar.classList.remove("active"); });
 
-    /* ---------- кнопки ---------- */
+    bar.addEventListener("pointermove", (e) => {
+      if (isSeeking) seekFromEvent(e);
+    });
+
+    bar.addEventListener("pointerup", () => {
+      isSeeking = false;
+      bar.classList.remove("active");
+    });
+
+    bar.addEventListener("pointercancel", () => {
+      isSeeking = false;
+      bar.classList.remove("active");
+    });
+
     playBtn.addEventListener("click", () => {
       haptic("light");
-      if (!audio.src) { loadNextTrack(); return; }
-      if (audio.paused) playAudio();
-      else pauseAudio();
+
+      if (!audio.src) {
+        loadNextTrack();
+        return;
+      }
+
+      if (audio.paused) {
+        playAudio();
+      } else {
+        pauseAudio();
+      }
     });
 
     nextBtn.addEventListener("click", () => {
@@ -780,24 +1115,29 @@
       loadNextTrack();
     });
 
-    /* ---------- старт ---------- */
     startBtn.addEventListener("click", async () => {
       startOverlay.classList.remove("show");
       haptic("medium");
-      ensureAnalyser(); /* обязательно внутри жеста пользователя */
 
-      if (audio.src) {
+      ensureAnalyser();
+
+      if (initialTrack && initialTrack.file_url) {
+        audio.src = initialTrack.file_url;
+        audio.load();
+        await playAudio();
+      } else if (audio.src) {
         await playAudio();
       } else {
         loadNextTrack();
       }
     });
 
-    /* ---------- инициализация ---------- */
     if (initialTrack && initialTrack.file_url) {
       setTrack(initialTrack.artist, initialTrack.title);
-      audio.src = initialTrack.file_url;
-      audio.load();
+
+      // Специально НЕ ставим audio.src здесь.
+      // src ставится только после клика по «Начать»,
+      // иначе Safari / Telegram WebView может отвалить звук первого трека.
     }
   </script>
 </body>
