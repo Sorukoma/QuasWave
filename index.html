@@ -57,7 +57,7 @@
         }
         #startOverlay.hidden { display: none; }
         .status { margin-top: 20px; font-size: 14px; opacity: 0.7; min-height: 20px; text-align: center; color: #ff6b6b; }
-        .debug-info { margin-top: 10px; font-size: 12px; color: #888; word-break: break-all; max-width: 90vw; }
+        .debug-info { margin-top: 10px; font-size: 12px; color: #888; word-break: break-all; max-width: 90vw; text-align: center; }
     </style>
 </head>
 <body>
@@ -185,6 +185,7 @@
         function loadNextTrack() {
             nextBtn.classList.add('loading');
             updateStatus("Загрузка следующего...");
+            debug("Отправка get_next_track в бота...");
             tg.sendData(JSON.stringify({ action: "get_next_track" }));
         }
 
@@ -202,7 +203,7 @@
         });
 
         audio.addEventListener('error', (e) => {
-            debug("Audio error: " + audio.error.code);
+            debug("Audio error: " + (audio.error ? audio.error.code : 'unknown'));
             updateStatus("Ошибка загрузки аудио");
             nextBtn.classList.remove('loading');
         });
@@ -227,7 +228,7 @@
         const dataParam = urlParams.get('data');
         const userIdParam = urlParams.get('user_id');
 
-        debug("URL params получены. data: " + (dataParam ? "OK" : "НЕТ") + ", user_id: " + (userIdParam || "НЕТ"));
+        debug("URL params: data=" + (dataParam ? "OK" : "НЕТ") + ", user_id=" + (userIdParam || "НЕТ"));
 
         if (dataParam) {
             try {
