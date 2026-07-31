@@ -201,7 +201,7 @@
             }
 
             // ЗАМЕНИ НА СВОЙ ВНЕШНИЙ IP
-            eventSource = new EventSource(`http://твой-внешний-ip:8080/stream/${userId}`);
+            eventSource = new EventSource(`http://85.155.101.231:8080/stream/${userId}`);
 
             eventSource.addEventListener('new_track', (event) => {
                 const trackData = JSON.parse(event.data);
