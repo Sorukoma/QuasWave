@@ -17,10 +17,11 @@
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
         }
         .cover {
-            width: 280px;
-            height: 280px;
+            width: min(280px, 80vw);
+            height: min(280px, 80vw);
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 20px;
             margin-bottom: 30px;
@@ -34,25 +35,22 @@
             text-align: center;
             margin-bottom: 30px;
             width: 100%;
+            padding: 0 20px;
         }
         .track-title {
-            font-size: 26px;
+            font-size: clamp(18px, 5vw, 26px);
             font-weight: bold;
             margin-bottom: 8px;
-            max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            padding: 0 10px;
         }
         .track-artist {
-            font-size: 18px;
+            font-size: clamp(14px, 4vw, 18px);
             opacity: 0.7;
-            max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            padding: 0 10px;
         }
         .progress-bar {
             width: 100%;
@@ -70,26 +68,34 @@
             transition: width 0.1s;
         }
         .controls {
-            display: flex;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
             align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
+            justify-items: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 0 10px;
         }
         button {
             background: rgba(255,255,255,0.1);
             color: #ffffff;
             border: none;
-            padding: 15px 20px;
-            border-radius: 50px;
-            font-size: 16px;
+            padding: 12px;
+            border-radius: 50%;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
             backdrop-filter: blur(10px);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         button:active {
-            transform: scale(0.95);
+            transform: scale(0.9);
             background: rgba(255,255,255,0.2);
         }
         button.like { background: rgba(46, 204, 113, 0.3); }
@@ -99,15 +105,10 @@
             background: #667eea;
             width: 70px;
             height: 70px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            font-size: 24px;
+            font-size: 28px;
         }
         .loading {
-            opacity: 0.6;
+            opacity: 0.5;
             pointer-events: none;
             animation: pulse 1.5s infinite;
         }
@@ -134,6 +135,7 @@
             font-size: 14px;
             opacity: 0.7;
             min-height: 20px;
+            text-align: center;
         }
     </style>
 </head>
@@ -141,7 +143,7 @@
     <div id="startOverlay">
         <div class="cover">🎵</div>
         <h2 style="margin: 20px 0;">Готов слушать?</h2>
-        <button id="startBtn" style="padding: 20px 40px; font-size: 24px; background: #667eea;">▶️ Начать</button>
+        <button id="startBtn" style="padding: 20px 40px; font-size: 24px; background: #667eea; width: auto; height: auto;">▶️ Начать</button>
     </div>
 
     <div class="cover">🎵</div>
@@ -193,14 +195,13 @@
             statusEl.innerText = text;
         }
 
-        // SSE подключение
         function connectSSE(userId) {
             if (eventSource) {
                 eventSource.close();
             }
 
             // ЗАМЕНИ НА СВОЙ ВНЕШНИЙ IP
-            eventSource = new EventSource(`http://85.155.101.231:8080/stream/${userId}`);
+            eventSource = new EventSource(`http://твой-внешний-ip:8080/stream/${userId}`);
 
             eventSource.addEventListener('new_track', (event) => {
                 const trackData = JSON.parse(event.data);
@@ -229,7 +230,6 @@
             console.log("SSE подключен для user_id:", userId);
         }
 
-        // ПЕРВЫЙ КЛИК
         startBtn.addEventListener('click', () => {
             hasInteracted = true;
             startOverlay.classList.add('hidden');
@@ -294,7 +294,6 @@
             setTimeout(() => updateStatus(""), 2000);
         });
 
-        // Обновление прогресс-бара
         audio.addEventListener('timeupdate', () => {
             if (audio.duration) {
                 const progress = (audio.currentTime / audio.duration) * 100;
@@ -302,14 +301,12 @@
             }
         });
 
-        // Когда трек закончился
         audio.addEventListener('ended', () => {
             console.log("Трек закончился");
             updateStatus("Загружаю следующий...");
             loadNextTrack();
         });
 
-        // Обработка ошибок
         audio.addEventListener('error', (e) => {
             console.error("Audio error:", e);
             updateStatus("Ошибка загрузки трека");
@@ -335,23 +332,24 @@
             updateStatus("");
         }
 
-        // Парсим данные из URL
         const urlParams = new URLSearchParams(window.location.search);
         const dataParam = urlParams.get('data');
         const userIdParam = urlParams.get('user_id');
 
         if (dataParam) {
             try {
-                const trackData = JSON.parse(atob(dataParam));
+                // URL-safe base64 decoding
+                const base64Fixed = dataParam.replace(/-/g, '+').replace(/_/g, '/');
+                const trackData = JSON.parse(atob(base64Fixed));
                 loadTrack(trackData);
 
-                // Подключаемся к SSE если есть user_id
                 if (userIdParam) {
                     connectSSE(userIdParam);
                 }
             } catch (e) {
                 console.error("Ошибка парсинга данных", e);
                 titleEl.innerText = "Ошибка загрузки";
+                artistEl.innerText = e.message;
             }
         } else {
             titleEl.innerText = "Открой через бота";
