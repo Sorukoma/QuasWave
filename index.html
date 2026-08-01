@@ -575,6 +575,127 @@
       color:var(--muted);
     }
 
+    .likes-panel{
+      width:min(420px, 92vw);
+      max-height:72vh;
+      background:#102a31;
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:0 24px 70px rgba(0,0,0,.55);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    .likes-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px 18px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .likes-title{
+      font-family:"Unbounded", sans-serif;
+      font-weight:700;
+      font-size:18px;
+    }
+
+    .likes-head button{
+      width:40px;
+      height:40px;
+      border:none;
+      border-radius:12px;
+      background:var(--panel);
+      color:var(--ink);
+      font-size:16px;
+      cursor:pointer;
+      transition:transform .12s ease;
+    }
+
+    .likes-head button:active{
+      transform:scale(.92);
+    }
+
+    .likes-list{
+      padding:12px;
+      overflow-y:auto;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:180px;
+    }
+
+    .likes-item{
+      width:100%;
+      text-align:left;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      color:var(--ink);
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:14px;
+      font-weight:600;
+      cursor:pointer;
+      transition:transform .12s ease, background .2s ease, border-color .2s ease;
+    }
+
+    .likes-item:hover{
+      background:rgba(89,224,200,.10);
+      border-color:rgba(89,224,200,.35);
+      transform:translateY(-1px);
+    }
+
+    .likes-item:active{
+      transform:scale(.98);
+    }
+
+    .likes-empty{
+      padding:28px 12px;
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .likes-nav{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      padding:14px;
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+
+    .likes-nav button{
+      width:46px;
+      height:40px;
+      border:none;
+      border-radius:12px;
+      background:var(--panel);
+      color:var(--ink);
+      font-size:16px;
+      cursor:pointer;
+      transition:transform .12s ease;
+    }
+
+    .likes-nav button:active{
+      transform:scale(.92);
+    }
+
+    .likes-nav button:disabled{
+      opacity:.35;
+      cursor:default;
+      transform:none;
+    }
+
+    .likes-page{
+      min-width:56px;
+      text-align:center;
+      font-size:14px;
+      font-weight:700;
+      color:var(--muted);
+    }
+
     .toast{
       position:fixed;
       left:50%;
@@ -665,6 +786,7 @@
     <section class="volume">
       <button id="muteBtn" aria-label="Mute">🔊</button>
       <input id="volume" type="range" min="0" max="100" value="80" aria-label="Громкость">
+      <button id="likesBtn" aria-label="Лайки">❤️</button>
     </section>
 
     <section class="controls">
@@ -694,6 +816,23 @@
     </div>
   </div>
 
+  <div class="overlay" id="likesOverlay">
+    <div class="likes-panel">
+      <div class="likes-head">
+        <div class="likes-title">❤️ Лайки</div>
+        <button id="likesClose" aria-label="Закрыть">✖️</button>
+      </div>
+
+      <div class="likes-list" id="likesList"></div>
+
+      <div class="likes-nav">
+        <button id="likesPrev" aria-label="Назад">⬅️</button>
+        <div class="likes-page" id="likesPage">1/1</div>
+        <button id="likesNext" aria-label="Вперёд">➡️</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <audio id="audio" crossorigin="anonymous" preload="auto"></audio>
@@ -701,7 +840,7 @@
   <script>
     "use strict";
 
-    const APP_VERSION = "20260801-05";
+    const APP_VERSION = "20260801-06";
     console.log("QuasWave frontend version:", APP_VERSION);
 
     // ВАЖНО:
@@ -761,6 +900,14 @@
     const volumeInput = document.getElementById("volume");
     const muteBtn = document.getElementById("muteBtn");
 
+    const likesBtn = document.getElementById("likesBtn");
+    const likesOverlay = document.getElementById("likesOverlay");
+    const likesClose = document.getElementById("likesClose");
+    const likesList = document.getElementById("likesList");
+    const likesPrev = document.getElementById("likesPrev");
+    const likesNext = document.getElementById("likesNext");
+    const likesPageEl = document.getElementById("likesPage");
+
     let userId = null;
     let initialTrack = null;
     let currentTrack = null;
@@ -769,6 +916,9 @@
     let isSeeking = false;
     let toastTimer = null;
     let waitingTimer = null;
+
+    let likesPage = 1;
+    let likesPages = 1;
 
     function b64UrlDecode(input) {
       let s = String(input).replace(/-/g, "+").replace(/_/g, "/");
@@ -808,10 +958,6 @@
         }
       }
 
-      // Приоритет:
-      // 1. Telegram WebApp user id, если открыто внутри Telegram.
-      // 2. user_id из URL.
-      // 3. user_id из initialTrack.
       if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
         userId = String(tg.initDataUnsafe.user.id);
       } else if (urlUserId) {
@@ -917,6 +1063,63 @@
       }
     }
 
+    async function startTrack(artist, track) {
+      if (!userId) {
+        toast("Нет user_id.");
+        return;
+      }
+
+      if (!artist || !track) {
+        toast("Нет данных трека.");
+        return;
+      }
+
+      showLoading(true);
+
+      try {
+        const response = await fetch(API_BASE + "/api/start_track", {
+          method: "POST",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            user_id: Number(userId),
+            artist: artist,
+            track: track
+          })
+        });
+
+        const text = await response.text();
+
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error("Backend вернул не JSON: " + text.slice(0, 160));
+        }
+
+        if (!response.ok) {
+          throw new Error(data.error || ("HTTP " + response.status));
+        }
+
+        setTrack(data.artist, data.title);
+
+        audio.src = data.file_url;
+        audio.load();
+
+        await playAudio();
+
+      } catch (err) {
+        console.error("startTrack error:", err);
+        toast("❌ " + (err.message || "Не удалось запустить трек"));
+      } finally {
+        showLoading(false);
+      }
+    }
+
     async function playAudio() {
       try {
         if (audioCtx && audioCtx.state === "suspended") {
@@ -991,6 +1194,114 @@
         return false;
       }
     }
+
+    async function loadLikes(page = 1) {
+      if (!userId) {
+        toast("Нет user_id.");
+        return;
+      }
+
+      likesList.innerHTML = '<div class="likes-empty">Загрузка...</div>';
+      likesPageEl.textContent = `${page}/?`;
+      likesPrev.disabled = true;
+      likesNext.disabled = true;
+
+      try {
+        const url =
+          API_BASE +
+          "/api/likes?user_id=" + encodeURIComponent(userId) +
+          "&page=" + encodeURIComponent(page) +
+          "&page_size=8";
+
+        const response = await fetch(url, {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+
+        const text = await response.text();
+
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error("Backend вернул не JSON: " + text.slice(0, 160));
+        }
+
+        if (!response.ok) {
+          throw new Error(data.error || ("HTTP " + response.status));
+        }
+
+        likesPage = data.page || 1;
+        likesPages = data.pages || 1;
+
+        likesPageEl.textContent = `${likesPage}/${likesPages}`;
+        likesPrev.disabled = likesPage <= 1;
+        likesNext.disabled = likesPage >= likesPages;
+
+        likesList.innerHTML = "";
+
+        if (!data.items || !data.items.length) {
+          likesList.innerHTML = '<div class="likes-empty">Лайков пока нет.<br>Жми 👍 в плеере.</div>';
+          return;
+        }
+
+        data.items.forEach((item) => {
+          const btn = document.createElement("button");
+          btn.className = "likes-item";
+          btn.textContent = `${item.artist} — ${item.track}`;
+
+          btn.addEventListener("click", async () => {
+            closeLikes();
+            setTrack(item.artist, item.track);
+            await startTrack(item.artist, item.track);
+          });
+
+          likesList.appendChild(btn);
+        });
+
+      } catch (err) {
+        console.error("loadLikes error:", err);
+        likesList.innerHTML = `<div class="likes-empty">❌ ${err.message || "Не удалось загрузить лайки"}</div>`;
+      }
+    }
+
+    function openLikes() {
+      likesOverlay.classList.add("show");
+      loadLikes(1);
+    }
+
+    function closeLikes() {
+      likesOverlay.classList.remove("show");
+    }
+
+    likesBtn.addEventListener("click", () => {
+      haptic("light");
+      openLikes();
+    });
+
+    likesClose.addEventListener("click", closeLikes);
+
+    likesOverlay.addEventListener("click", (e) => {
+      if (e.target === likesOverlay) {
+        closeLikes();
+      }
+    });
+
+    likesPrev.addEventListener("click", () => {
+      if (likesPage > 1) {
+        loadLikes(likesPage - 1);
+      }
+    });
+
+    likesNext.addEventListener("click", () => {
+      if (likesPage < likesPages) {
+        loadLikes(likesPage + 1);
+      }
+    });
 
     let audioCtx = null;
     let analyser = null;
