@@ -57,7 +57,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 10px;
         }
 
         .brand {
@@ -100,6 +100,13 @@
             margin-top: 3px;
             font-size: 12px;
             color: #9aa4c7;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
         }
 
         .icon-btn {
@@ -147,10 +154,12 @@
         }
 
         .cover {
+            position: relative;
             width: 182px;
             height: 182px;
             max-width: 100%;
             border-radius: 28px;
+            overflow: hidden;
             background:
                 radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.24), transparent 22%),
                 linear-gradient(135deg, #6d4aff, #00c2ff);
@@ -162,6 +171,15 @@
             box-shadow:
                 0 20px 55px rgba(0, 194, 255, 0.22),
                 inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        }
+
+        .cover-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
         }
 
         .track-info {
@@ -238,6 +256,14 @@
             transform: scale(0.91);
         }
 
+        .control-btn.liked {
+            background:
+                linear-gradient(135deg, #ff4d67, #ff2e4d);
+            box-shadow:
+                0 14px 34px rgba(255, 46, 77, 0.34),
+                inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        }
+
         .play-btn {
             width: 86px;
             height: 86px;
@@ -285,30 +311,40 @@
             pointer-events: auto;
         }
 
-        .likes-panel {
+        .likes-panel,
+        .modes-panel {
             position: fixed;
             left: 0;
             right: 0;
             bottom: 0;
-            height: 78vh;
-            max-height: 78vh;
             background: #101527;
             border-top-left-radius: 24px;
             border-top-right-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             transform: translateY(100%);
             transition: transform 0.24s ease;
-            z-index: 30;
             display: flex;
             flex-direction: column;
             box-shadow: 0 -20px 70px rgba(0, 0, 0, 0.4);
         }
 
-        .likes-panel.open {
+        .likes-panel {
+            height: 78vh;
+            max-height: 78vh;
+            z-index: 30;
+        }
+
+        .modes-panel {
+            z-index: 35;
+            max-height: 82vh;
+        }
+
+        .likes-panel.open,
+        .modes-panel.open {
             transform: translateY(0);
         }
 
-        .likes-header {
+        .panel-header {
             padding: 16px;
             display: flex;
             align-items: flex-start;
@@ -317,12 +353,12 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .likes-title {
+        .panel-title {
             font-size: 20px;
             font-weight: 900;
         }
 
-        .likes-user {
+        .panel-subtitle {
             margin-top: 6px;
             font-size: 12px;
             color: #9aa4c7;
@@ -337,7 +373,10 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        .like-item {
+        .like-item,
+        .mode-option {
+            width: 100%;
+            text-align: left;
             padding: 13px 14px;
             margin-bottom: 9px;
             border-radius: 16px;
@@ -350,13 +389,41 @@
             transition: transform 0.12s ease, background 0.18s ease;
         }
 
-        .like-item:active {
+        .like-item:active,
+        .mode-option:active {
             transform: scale(0.98);
             background: rgba(255, 255, 255, 0.10);
         }
 
-        .like-item:last-child {
+        .like-item:last-child,
+        .mode-option:last-child {
             margin-bottom: 0;
+        }
+
+        .modes-body {
+            padding: 12px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 13px 14px;
+            margin-bottom: 9px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            line-height: 1.35;
+        }
+
+        .checkbox-row input {
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
+            accent-color: #63e6ff;
+            flex: 0 0 auto;
         }
 
         .loading {
@@ -417,13 +484,20 @@
                     <p>волна last.fm</p>
                 </div>
             </div>
-            <button id="openLikesBtn" class="icon-btn" title="Лайки">❤️</button>
+
+            <div class="header-actions">
+                <button id="openModesBtn" class="icon-btn" title="Режимы">🧭</button>
+                <button id="openLikesBtn" class="icon-btn" title="Лайки">❤️</button>
+            </div>
         </div>
 
         <div id="modeLabel" class="mode-label">🎵 Волна QuasWave</div>
 
         <div class="card">
-            <div class="cover">QW</div>
+            <div class="cover">
+                <img id="coverImg" class="cover-img" alt="cover">
+                <span id="coverPlaceholder">QW</span>
+            </div>
 
             <div class="track-info">
                 <div id="trackTitle" class="track-title">Готов слушать?</div>
@@ -452,21 +526,46 @@
         </div>
 
         <div class="footer-note">
-            Выбор трека из ❤️-лайков запускает плейлист из лайков, а не волну по одному треку.
+            Выбор трека из ❤️-лайков запускает плейлист из лайков.
+            Кнопка 🧭 переключает волны без бота.
         </div>
     </div>
 
     <div id="backdrop" class="backdrop"></div>
 
     <div id="likesPanel" class="likes-panel">
-        <div class="likes-header">
+        <div class="panel-header">
             <div>
-                <div class="likes-title">❤️ Лайки</div>
-                <div id="likesUser" class="likes-user">user_id: ...</div>
+                <div class="panel-title">❤️ Лайки</div>
+                <div id="likesUser" class="panel-subtitle">user_id: ...</div>
             </div>
             <button id="closeLikesBtn" class="icon-btn" title="Закрыть">✖️</button>
         </div>
         <div id="likesList" class="likes-list"></div>
+    </div>
+
+    <div id="modesPanel" class="modes-panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">🧭 Режимы волны</div>
+                <div class="panel-subtitle">Переключение без возврата в бота</div>
+            </div>
+            <button id="closeModesBtn" class="icon-btn" title="Закрыть">✖️</button>
+        </div>
+
+        <div class="modes-body">
+            <button id="previousWaveBtn" class="mode-option" style="display:none;">↩️ Вернуться к прошлой волне</button>
+            <button id="modeTrackBtn" class="mode-option">🎶 Волна по конкретному треку</button>
+            <button id="modeLikesBtn" class="mode-option">❤️ Волна по лайкам</button>
+            <button id="modePlaylistBtn" class="mode-option">❤️ Плейлист из лайков</button>
+            <button id="modeArtistBtn" class="mode-option">🎤 Волна по исполнителю</button>
+            <button id="modeGlobalBtn" class="mode-option">🌍 Глобальная волна</button>
+
+            <label class="checkbox-row">
+                <input id="globalUseLikes" type="checkbox">
+                <span>Учитывать мои последние 10 лайков для формирования глобальной волны</span>
+            </label>
+        </div>
     </div>
 
     <div id="loading" class="loading">Загрузка...</div>
@@ -475,7 +574,7 @@
     <audio id="audio" preload="auto"></audio>
 
     <script>
-        const APP_VERSION = "20260801-11";
+        const APP_VERSION = "20260801-12";
 
         const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 
@@ -559,9 +658,13 @@
             artist: initialData.artist || "",
             title: initialData.title || initialData.track || "",
             fileUrl: initialData.file_url || "",
+            coverUrl: initialData.cover_url || "",
             mode: initialData.mode || "",
             seedArtist: initialData.seed_artist || "",
             seedTrack: initialData.seed_track || "",
+            liked: !!initialData.liked,
+            globalUseLikes: false,
+            previousWave: null,
             likesPage: 1,
             likesPages: 1,
             likesLoading: false,
@@ -582,12 +685,27 @@
         const dislikeBtn = document.getElementById("dislikeBtn");
         const muteBtn = document.getElementById("muteBtn");
         const volumeInput = document.getElementById("volume");
+        const coverImg = document.getElementById("coverImg");
+        const coverPlaceholder = document.getElementById("coverPlaceholder");
+
         const openLikesBtn = document.getElementById("openLikesBtn");
         const closeLikesBtn = document.getElementById("closeLikesBtn");
         const likesPanel = document.getElementById("likesPanel");
         const backdrop = document.getElementById("backdrop");
         const likesList = document.getElementById("likesList");
         const likesUser = document.getElementById("likesUser");
+
+        const openModesBtn = document.getElementById("openModesBtn");
+        const closeModesBtn = document.getElementById("closeModesBtn");
+        const modesPanel = document.getElementById("modesPanel");
+        const previousWaveBtn = document.getElementById("previousWaveBtn");
+        const modeTrackBtn = document.getElementById("modeTrackBtn");
+        const modeLikesBtn = document.getElementById("modeLikesBtn");
+        const modePlaylistBtn = document.getElementById("modePlaylistBtn");
+        const modeArtistBtn = document.getElementById("modeArtistBtn");
+        const modeGlobalBtn = document.getElementById("modeGlobalBtn");
+        const globalUseLikes = document.getElementById("globalUseLikes");
+
         const loading = document.getElementById("loading");
         const toast = document.getElementById("toast");
 
@@ -632,6 +750,14 @@
             return minutes + ":" + String(rest).padStart(2, "0");
         }
 
+        function modeTitle(mode) {
+            if (mode === "likes") return "❤️ волна по лайкам";
+            if (mode === "likes_playlist") return "❤️ плейлист из лайков";
+            if (mode === "artist") return "🎤 волна по исполнителю";
+            if (mode === "global") return "🌍 глобальная волна";
+            return "🎶 волна по треку";
+        }
+
         function updateModeLabel() {
             let text = "🎵 Волна QuasWave";
 
@@ -641,6 +767,8 @@
                 text = "❤️ Плейлист из лайков";
             } else if (state.mode === "artist") {
                 text = "🎤 Волна по исполнителю: " + (state.seedArtist || state.artist || "");
+            } else if (state.mode === "global") {
+                text = "🌍 Глобальная волна" + (state.globalUseLikes ? " + мои лайки" : "");
             } else if (state.mode === "track") {
                 text = "🎶 Волна по треку: " + (state.seedArtist || state.artist || "") + " — " + (state.seedTrack || state.title || "");
             } else if (state.artist && state.title) {
@@ -663,6 +791,22 @@
             updateModeLabel();
         }
 
+        function updateCover() {
+            if (state.coverUrl) {
+                coverImg.src = state.coverUrl;
+                coverImg.style.display = "block";
+                coverPlaceholder.style.display = "none";
+            } else {
+                coverImg.removeAttribute("src");
+                coverImg.style.display = "none";
+                coverPlaceholder.style.display = "block";
+            }
+        }
+
+        function updateLikeBtn() {
+            likeBtn.classList.toggle("liked", !!state.liked);
+        }
+
         function updatePlayIcon() {
             playBtn.textContent = audio.paused ? "▶" : "⏸";
         }
@@ -677,29 +821,82 @@
             }
         }
 
-        function setMedia(artist, title, fileUrl, mode, seedArtist, seedTrack) {
-            if (artist) {
-                state.artist = artist;
+        function canShowPreviousWave() {
+            const prev = state.previousWave;
+
+            if (!prev || !prev.mode) {
+                return false;
             }
 
-            if (title) {
-                state.title = title;
+            if (prev.mode === "track") {
+                return !!(prev.seedArtist && prev.seedTrack);
             }
 
-            if (fileUrl) {
-                state.fileUrl = fileUrl;
+            if (prev.mode === "artist") {
+                return !!prev.seedArtist;
             }
 
-            if (mode) {
-                state.mode = mode;
+            return true;
+        }
+
+        function updateModesPanel() {
+            globalUseLikes.checked = !!state.globalUseLikes;
+
+            if (canShowPreviousWave()) {
+                previousWaveBtn.style.display = "block";
+                previousWaveBtn.textContent = "↩️ Вернуться: " + modeTitle(state.previousWave.mode);
+            } else {
+                previousWaveBtn.style.display = "none";
+            }
+        }
+
+        function applyTrackData(data) {
+            if (!data) {
+                return;
             }
 
-            if (seedArtist !== undefined && seedArtist !== null && seedArtist !== "") {
-                state.seedArtist = seedArtist;
+            const newMode = data.mode || state.mode;
+
+            if (newMode && state.mode && newMode !== state.mode) {
+                state.previousWave = {
+                    mode: state.mode,
+                    seedArtist: state.seedArtist,
+                    seedTrack: state.seedTrack,
+                    artist: state.artist,
+                    title: state.title
+                };
             }
 
-            if (seedTrack !== undefined && seedTrack !== null && seedTrack !== "") {
-                state.seedTrack = seedTrack;
+            if (data.artist) {
+                state.artist = data.artist;
+            }
+
+            if (data.title) {
+                state.title = data.title;
+            }
+
+            if (data.file_url) {
+                state.fileUrl = data.file_url;
+            }
+
+            if (data.mode) {
+                state.mode = data.mode;
+            }
+
+            if (data.seed_artist !== undefined && data.seed_artist !== null && data.seed_artist !== "") {
+                state.seedArtist = data.seed_artist;
+            }
+
+            if (data.seed_track !== undefined && data.seed_track !== null && data.seed_track !== "") {
+                state.seedTrack = data.seed_track;
+            }
+
+            if (data.cover_url !== undefined) {
+                state.coverUrl = data.cover_url || "";
+            }
+
+            if (data.liked !== undefined) {
+                state.liked = !!data.liked;
             }
 
             if (state.mode === "track") {
@@ -713,6 +910,9 @@
             }
 
             updateTrackInfo();
+            updateCover();
+            updateLikeBtn();
+            updateModesPanel();
 
             if (state.fileUrl) {
                 audio.src = state.fileUrl;
@@ -823,14 +1023,7 @@
             try {
                 const data = await apiFetch(buildNextPath());
 
-                setMedia(
-                    data.artist,
-                    data.title,
-                    data.file_url,
-                    data.mode,
-                    data.seed_artist,
-                    data.seed_track
-                );
+                applyTrackData(data);
 
                 if (autoplay) {
                     await playAudio();
@@ -857,14 +1050,7 @@
                     }
                 });
 
-                setMedia(
-                    data.artist,
-                    data.title,
-                    data.file_url,
-                    data.mode,
-                    data.seed_artist,
-                    data.seed_track
-                );
+                applyTrackData(data);
 
                 if (autoplay) {
                     await playAudio();
@@ -885,19 +1071,12 @@
                 const data = await apiFetch(withUser("/api/start_liked_playlist"), {
                     method: "POST",
                     json: {
-                        artist: artist,
-                        track: track
+                        artist: artist || "",
+                        track: track || ""
                     }
                 });
 
-                setMedia(
-                    data.artist,
-                    data.title,
-                    data.file_url,
-                    data.mode,
-                    data.seed_artist,
-                    data.seed_track
-                );
+                applyTrackData(data);
 
                 if (autoplay) {
                     await playAudio();
@@ -922,15 +1101,7 @@
                     }
                 });
 
-                setMedia(
-                    data.artist,
-                    data.title,
-                    data.file_url,
-                    data.mode,
-                    data.seed_artist,
-                    data.seed_track
-                );
-
+                applyTrackData(data);
                 await playAudio();
             } catch (e) {
                 console.error("Start artist failed", e);
@@ -938,6 +1109,71 @@
             } finally {
                 setLoading(false);
                 updatePlayIcon();
+            }
+        }
+
+        async function startLikesWave() {
+            setLoading(true);
+
+            try {
+                const data = await apiFetch(withUser("/api/start_likes_wave"), {
+                    method: "POST",
+                    json: {}
+                });
+
+                applyTrackData(data);
+                await playAudio();
+            } catch (e) {
+                console.error("Start likes wave failed", e);
+                showToast(e.message || "Не удалось запустить волну по лайкам");
+            } finally {
+                setLoading(false);
+                updatePlayIcon();
+            }
+        }
+
+        async function startGlobalWave() {
+            setLoading(true);
+
+            try {
+                const data = await apiFetch(withUser("/api/start_global_wave"), {
+                    method: "POST",
+                    json: {}
+                });
+
+                applyTrackData(data);
+                await playAudio();
+            } catch (e) {
+                console.error("Start global wave failed", e);
+                showToast(e.message || "Не удалось запустить глобальную волну");
+            } finally {
+                setLoading(false);
+                updatePlayIcon();
+            }
+        }
+
+        async function startPreviousWave() {
+            const prev = state.previousWave;
+
+            if (!prev || !canShowPreviousWave()) {
+                showToast("Нет предыдущей волны");
+                return;
+            }
+
+            closeModes();
+
+            if (prev.mode === "track") {
+                await startTrack(prev.seedArtist, prev.seedTrack, true);
+            } else if (prev.mode === "artist") {
+                await startArtist(prev.seedArtist);
+            } else if (prev.mode === "likes") {
+                await startLikesWave();
+            } else if (prev.mode === "likes_playlist") {
+                await startLikedPlaylist("", "", true);
+            } else if (prev.mode === "global") {
+                await startGlobalWave();
+            } else {
+                showToast("Не знаю, куда возвращать");
             }
         }
 
@@ -955,6 +1191,9 @@
                         track: state.title
                     }
                 });
+
+                state.liked = true;
+                updateLikeBtn();
 
                 haptic("medium");
                 showToast("Лайк сохранён");
@@ -986,6 +1225,9 @@
                         track: state.title
                     }
                 });
+
+                state.liked = false;
+                updateLikeBtn();
 
                 haptic("heavy");
                 showToast("Дизлайк учтён");
@@ -1075,6 +1317,11 @@
             updatePlayIcon();
         });
 
+        coverImg.addEventListener("error", () => {
+            state.coverUrl = "";
+            updateCover();
+        });
+
         seek.addEventListener("input", () => {
             if (isFinite(audio.duration) && audio.duration > 0 && seek.max) {
                 audio.currentTime = (Number(seek.value) / Number(seek.max)) * audio.duration;
@@ -1083,6 +1330,7 @@
         });
 
         function openLikes() {
+            closeModes();
             likesPanel.classList.add("open");
             backdrop.classList.add("show");
             likesUser.textContent = "user_id: " + state.userId;
@@ -1094,12 +1342,116 @@
 
         function closeLikes() {
             likesPanel.classList.remove("open");
-            backdrop.classList.remove("show");
+
+            if (!modesPanel.classList.contains("open")) {
+                backdrop.classList.remove("show");
+            }
+        }
+
+        function openModes() {
+            closeLikes();
+            updateModesPanel();
+            modesPanel.classList.add("open");
+            backdrop.classList.add("show");
+        }
+
+        function closeModes() {
+            modesPanel.classList.remove("open");
+
+            if (!likesPanel.classList.contains("open")) {
+                backdrop.classList.remove("show");
+            }
         }
 
         openLikesBtn.addEventListener("click", openLikes);
         closeLikesBtn.addEventListener("click", closeLikes);
-        backdrop.addEventListener("click", closeLikes);
+        backdrop.addEventListener("click", () => {
+            closeLikes();
+            closeModes();
+        });
+
+        openModesBtn.addEventListener("click", openModes);
+        closeModesBtn.addEventListener("click", closeModes);
+
+        previousWaveBtn.addEventListener("click", startPreviousWave);
+
+        modeTrackBtn.addEventListener("click", () => {
+            const input = window.prompt("Введи трек в формате: Артист - Трек");
+
+            if (!input) {
+                return;
+            }
+
+            let artist = "";
+            let track = "";
+
+            if (input.includes(" - ")) {
+                const parts = input.split(" - ");
+                artist = parts[0].trim();
+                track = parts[1].trim();
+            } else if (input.includes(" — ")) {
+                const parts = input.split(" — ");
+                artist = parts[0].trim();
+                track = parts[1].trim();
+            }
+
+            if (!artist || !track) {
+                showToast("Нужен формат: Артист - Трек");
+                return;
+            }
+
+            closeModes();
+            startTrack(artist, track, true);
+        });
+
+        modeLikesBtn.addEventListener("click", () => {
+            closeModes();
+            startLikesWave();
+        });
+
+        modePlaylistBtn.addEventListener("click", () => {
+            closeModes();
+            startLikedPlaylist("", "", true);
+        });
+
+        modeArtistBtn.addEventListener("click", () => {
+            const artist = window.prompt("Введи исполнителя");
+
+            if (!artist || !artist.trim()) {
+                return;
+            }
+
+            closeModes();
+            startArtist(artist.trim());
+        });
+
+        modeGlobalBtn.addEventListener("click", () => {
+            closeModes();
+            startGlobalWave();
+        });
+
+        globalUseLikes.addEventListener("change", async () => {
+            const checked = !!globalUseLikes.checked;
+
+            try {
+                await apiFetch(withUser("/api/settings"), {
+                    method: "POST",
+                    json: {
+                        global_use_likes: checked
+                    }
+                });
+
+                state.globalUseLikes = checked;
+                updateModeLabel();
+                updateModesPanel();
+
+                showToast(checked ? "Глобальная волна будет учитывать твои лайки" : "Глобальная волна без твоих лайков");
+            } catch (e) {
+                console.error("Settings failed", e);
+                showToast(e.message || "Не удалось сохранить настройку");
+                globalUseLikes.checked = state.globalUseLikes;
+            }
+        });
 
         async function loadLikes(reset) {
             if (state.likesLoading) {
@@ -1170,23 +1522,60 @@
             }
         });
 
+        async function loadState() {
+            try {
+                const data = await apiFetch(withUser("/api/state"));
+
+                state.globalUseLikes = !!data.global_use_likes;
+                globalUseLikes.checked = state.globalUseLikes;
+
+                if (!state.mode && data.mode) {
+                    state.mode = data.mode;
+                    state.seedArtist = data.seed_artist || state.seedArtist;
+                    state.seedTrack = data.seed_track || state.seedTrack;
+                }
+
+                if (
+                    data.current_artist &&
+                    data.current_title &&
+                    data.current_artist === state.artist &&
+                    data.current_title === state.title
+                ) {
+                    state.liked = !!data.liked;
+                    updateLikeBtn();
+                }
+
+                updateTrackInfo();
+                updateModesPanel();
+            } catch (e) {
+                console.error("Load state failed", e);
+            }
+        }
+
         if (initialData && initialData.artist && (initialData.title || initialData.track)) {
-            setMedia(
-                initialData.artist,
-                initialData.title || initialData.track,
-                initialData.file_url,
-                initialData.mode,
-                initialData.seed_artist,
-                initialData.seed_track
-            );
+            applyTrackData({
+                artist: initialData.artist,
+                title: initialData.title || initialData.track,
+                file_url: initialData.file_url,
+                cover_url: initialData.cover_url,
+                mode: initialData.mode,
+                seed_artist: initialData.seed_artist,
+                seed_track: initialData.seed_track,
+                liked: initialData.liked
+            });
         } else {
             updateTrackInfo();
+            updateCover();
+            updateLikeBtn();
+            updateModesPanel();
         }
 
         audio.volume = 1;
         volumeInput.value = "1";
         updateVolumeIcon();
         updatePlayIcon();
+
+        loadState();
     </script>
 </body>
 </html>
