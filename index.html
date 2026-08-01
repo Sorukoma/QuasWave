@@ -31,6 +31,8 @@
 
     html,body{
       height:100%;
+      max-width:100%;
+      overflow-x:hidden;
     }
 
     body{
@@ -42,6 +44,7 @@
       color:var(--ink);
       font-family:"Manrope", system-ui, sans-serif;
       overflow-y:auto;
+      overflow-x:hidden;
       user-select:none;
     }
 
@@ -85,17 +88,21 @@
       position:relative;
       z-index:2;
       width:min(430px, 100%);
+      max-width:100%;
       min-height:100dvh;
       padding:calc(18px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom));
       display:flex;
       flex-direction:column;
       gap:18px;
+      overflow-x:hidden;
     }
 
     .top{
       display:flex;
       align-items:center;
       justify-content:space-between;
+      gap:10px;
+      min-width:0;
     }
 
     .logo{
@@ -106,6 +113,7 @@
       display:flex;
       align-items:center;
       gap:10px;
+      min-width:0;
     }
 
     .logo span{
@@ -141,6 +149,7 @@
       border:1px solid var(--line);
       border-radius:999px;
       padding:6px 12px;
+      white-space:nowrap;
     }
 
     .badge b{
@@ -153,6 +162,7 @@
       flex-direction:column;
       align-items:center;
       padding:14px 0 4px;
+      min-width:0;
     }
 
     .rings{
@@ -247,6 +257,7 @@
       flex-direction:column;
       justify-content:center;
       gap:7px;
+      min-width:0;
     }
 
     .track{
@@ -256,6 +267,8 @@
       line-height:1.25;
       letter-spacing:.01em;
       transition:opacity .25s ease, transform .25s ease;
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
 
     .track.swap{
@@ -269,12 +282,15 @@
       letter-spacing:.22em;
       text-transform:uppercase;
       color:var(--muted);
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
 
     .progress{
       display:flex;
       flex-direction:column;
       gap:8px;
+      min-width:0;
     }
 
     .bar{
@@ -338,6 +354,7 @@
       align-items:center;
       gap:12px;
       min-height:44px;
+      min-width:0;
     }
 
     .volume button{
@@ -366,6 +383,7 @@
     .volume input[type="range"]{
       flex:1 1 auto;
       width:100%;
+      min-width:0;
       appearance:none;
       -webkit-appearance:none;
       height:6px;
@@ -402,6 +420,7 @@
       justify-content:center;
       gap:16px;
       margin-top:2px;
+      min-width:0;
     }
 
     .controls button{
@@ -419,6 +438,7 @@
       justify-content:center;
       transition:transform .12s ease, box-shadow .2s ease, background .2s ease;
       touch-action:manipulation;
+      flex:0 0 auto;
     }
 
     .controls button:hover{
@@ -459,6 +479,7 @@
       opacity:0;
       pointer-events:none;
       transition:opacity .3s ease;
+      overflow:hidden;
     }
 
     .overlay.show{
@@ -473,6 +494,7 @@
       align-items:center;
       gap:22px;
       padding:24px;
+      max-width:100%;
     }
 
     .logo.big{
@@ -546,6 +568,7 @@
       flex-direction:column;
       align-items:center;
       gap:20px;
+      max-width:100%;
     }
 
     .eq{
@@ -585,12 +608,14 @@
       display:flex;
       flex-direction:column;
       overflow:hidden;
+      max-width:100%;
     }
 
     .likes-head{
       display:flex;
       align-items:center;
       justify-content:space-between;
+      gap:12px;
       padding:16px 18px;
       border-bottom:1px solid rgba(255,255,255,.08);
     }
@@ -599,6 +624,12 @@
       font-family:"Unbounded", sans-serif;
       font-weight:700;
       font-size:18px;
+    }
+
+    .likes-sub{
+      margin-top:4px;
+      font-size:12px;
+      color:var(--muted);
     }
 
     .likes-head button{
@@ -611,6 +642,7 @@
       font-size:16px;
       cursor:pointer;
       transition:transform .12s ease;
+      flex:0 0 auto;
     }
 
     .likes-head button:active{
@@ -619,11 +651,28 @@
 
     .likes-list{
       padding:12px;
+      height:min(56vh, 480px);
       overflow-y:auto;
+      overflow-x:hidden;
       display:flex;
       flex-direction:column;
       gap:8px;
-      min-height:180px;
+      overscroll-behavior:contain;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(89,224,200,.35) transparent;
+    }
+
+    .likes-list::-webkit-scrollbar{
+      width:8px;
+    }
+
+    .likes-list::-webkit-scrollbar-track{
+      background:transparent;
+    }
+
+    .likes-list::-webkit-scrollbar-thumb{
+      background:rgba(89,224,200,.35);
+      border-radius:999px;
     }
 
     .likes-item{
@@ -638,6 +687,9 @@
       font-weight:600;
       cursor:pointer;
       transition:transform .12s ease, background .2s ease, border-color .2s ease;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      flex:0 0 auto;
     }
 
     .likes-item:hover{
@@ -655,45 +707,6 @@
       text-align:center;
       color:var(--muted);
       font-size:14px;
-    }
-
-    .likes-nav{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:14px;
-      padding:14px;
-      border-top:1px solid rgba(255,255,255,.08);
-    }
-
-    .likes-nav button{
-      width:46px;
-      height:40px;
-      border:none;
-      border-radius:12px;
-      background:var(--panel);
-      color:var(--ink);
-      font-size:16px;
-      cursor:pointer;
-      transition:transform .12s ease;
-    }
-
-    .likes-nav button:active{
-      transform:scale(.92);
-    }
-
-    .likes-nav button:disabled{
-      opacity:.35;
-      cursor:default;
-      transform:none;
-    }
-
-    .likes-page{
-      min-width:56px;
-      text-align:center;
-      font-size:14px;
-      font-weight:700;
-      color:var(--muted);
     }
 
     .toast{
@@ -819,17 +832,14 @@
   <div class="overlay" id="likesOverlay">
     <div class="likes-panel">
       <div class="likes-head">
-        <div class="likes-title">❤️ Лайки</div>
+        <div>
+          <div class="likes-title">❤️ Лайки</div>
+          <div class="likes-sub" id="likesMeta"></div>
+        </div>
         <button id="likesClose" aria-label="Закрыть">✖️</button>
       </div>
 
       <div class="likes-list" id="likesList"></div>
-
-      <div class="likes-nav">
-        <button id="likesPrev" aria-label="Назад">⬅️</button>
-        <div class="likes-page" id="likesPage">1/1</div>
-        <button id="likesNext" aria-label="Вперёд">➡️</button>
-      </div>
     </div>
   </div>
 
@@ -840,7 +850,7 @@
   <script>
     "use strict";
 
-    const APP_VERSION = "20260801-06";
+    const APP_VERSION = "20260801-07";
     console.log("QuasWave frontend version:", APP_VERSION);
 
     // ВАЖНО:
@@ -878,6 +888,21 @@
       } catch (e) {}
     }
 
+    function apiHeaders(extra) {
+      const headers = Object.assign(
+        {
+          "Accept": "application/json"
+        },
+        extra || {}
+      );
+
+      if (tg && tg.initData) {
+        headers["X-Telegram-Init-Data"] = tg.initData;
+      }
+
+      return headers;
+    }
+
     const audio = document.getElementById("audio");
     const titleEl = document.getElementById("title");
     const artistEl = document.getElementById("artist");
@@ -904,9 +929,7 @@
     const likesOverlay = document.getElementById("likesOverlay");
     const likesClose = document.getElementById("likesClose");
     const likesList = document.getElementById("likesList");
-    const likesPrev = document.getElementById("likesPrev");
-    const likesNext = document.getElementById("likesNext");
-    const likesPageEl = document.getElementById("likesPage");
+    const likesMeta = document.getElementById("likesMeta");
 
     let userId = null;
     let initialTrack = null;
@@ -919,6 +942,8 @@
 
     let likesPage = 1;
     let likesPages = 1;
+    let likesTotal = 0;
+    let likesLoading = false;
 
     function b64UrlDecode(input) {
       let s = String(input).replace(/-/g, "+").replace(/_/g, "/");
@@ -958,6 +983,13 @@
         }
       }
 
+      // Приоритет:
+      // 1. Telegram WebApp user id, если открыто внутри Telegram.
+      // 2. user_id из URL.
+      // 3. user_id из initialTrack.
+      //
+      // На бэке ещё есть проверка initData, поэтому чужой user_id
+      // внутри Telegram должен быть перезаписан реальным.
       if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
         userId = String(tg.initDataUnsafe.user.id);
       } else if (urlUserId) {
@@ -1028,9 +1060,7 @@
         const response = await fetch(url, {
           method: "GET",
           cache: "no-store",
-          headers: {
-            "Accept": "application/json"
-          }
+          headers: apiHeaders()
         });
 
         const text = await response.text();
@@ -1080,10 +1110,9 @@
         const response = await fetch(API_BASE + "/api/start_track", {
           method: "POST",
           cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
+          headers: apiHeaders({
+            "Content-Type": "application/json"
+          }),
           body: JSON.stringify({
             user_id: Number(userId),
             artist: artist,
@@ -1161,10 +1190,9 @@
         const response = await fetch(url, {
           method: "POST",
           cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
+          headers: apiHeaders({
+            "Content-Type": "application/json"
+          }),
           body: JSON.stringify({
             user_id: Number(userId),
             artist: currentTrack.artist,
@@ -1195,30 +1223,54 @@
       }
     }
 
-    async function loadLikes(page = 1) {
+    function appendLikeItem(item) {
+      const btn = document.createElement("button");
+
+      btn.className = "likes-item";
+      btn.textContent = `${item.artist} — ${item.track}`;
+
+      btn.addEventListener("click", async () => {
+        closeLikes();
+        setTrack(item.artist, item.track);
+        await startTrack(item.artist, item.track);
+      });
+
+      likesList.appendChild(btn);
+    }
+
+    async function loadLikes(reset = true) {
       if (!userId) {
         toast("Нет user_id.");
         return;
       }
 
-      likesList.innerHTML = '<div class="likes-empty">Загрузка...</div>';
-      likesPageEl.textContent = `${page}/?`;
-      likesPrev.disabled = true;
-      likesNext.disabled = true;
+      if (likesLoading) return;
+
+      if (!reset && likesPage > likesPages) return;
+
+      likesLoading = true;
+
+      const requestPage = reset ? 1 : likesPage;
+
+      if (reset) {
+        likesList.innerHTML = '<div class="likes-empty">Загрузка...</div>';
+        likesMeta.textContent = "";
+        likesPage = 1;
+        likesPages = 1;
+        likesTotal = 0;
+      }
 
       try {
         const url =
           API_BASE +
           "/api/likes?user_id=" + encodeURIComponent(userId) +
-          "&page=" + encodeURIComponent(page) +
-          "&page_size=8";
+          "&page=" + encodeURIComponent(requestPage) +
+          "&page_size=20";
 
         const response = await fetch(url, {
           method: "GET",
           cache: "no-store",
-          headers: {
-            "Accept": "application/json"
-          }
+          headers: apiHeaders()
         });
 
         const text = await response.text();
@@ -1235,43 +1287,43 @@
           throw new Error(data.error || ("HTTP " + response.status));
         }
 
-        likesPage = data.page || 1;
+        if (reset) {
+          likesList.innerHTML = "";
+        }
+
         likesPages = data.pages || 1;
+        likesTotal = data.total || 0;
 
-        likesPageEl.textContent = `${likesPage}/${likesPages}`;
-        likesPrev.disabled = likesPage <= 1;
-        likesNext.disabled = likesPage >= likesPages;
+        const currentPage = data.page || requestPage;
+        likesPage = currentPage + 1;
 
-        likesList.innerHTML = "";
+        likesMeta.textContent = likesTotal ? `всего: ${likesTotal}` : "";
 
-        if (!data.items || !data.items.length) {
+        if ((!data.items || !data.items.length) && reset) {
           likesList.innerHTML = '<div class="likes-empty">Лайков пока нет.<br>Жми 👍 в плеере.</div>';
           return;
         }
 
-        data.items.forEach((item) => {
-          const btn = document.createElement("button");
-          btn.className = "likes-item";
-          btn.textContent = `${item.artist} — ${item.track}`;
-
-          btn.addEventListener("click", async () => {
-            closeLikes();
-            setTrack(item.artist, item.track);
-            await startTrack(item.artist, item.track);
-          });
-
-          likesList.appendChild(btn);
-        });
+        if (data.items && data.items.length) {
+          data.items.forEach(appendLikeItem);
+        }
 
       } catch (err) {
         console.error("loadLikes error:", err);
-        likesList.innerHTML = `<div class="likes-empty">❌ ${err.message || "Не удалось загрузить лайки"}</div>`;
+
+        if (reset) {
+          likesList.innerHTML = `<div class="likes-empty">❌ ${err.message || "Не удалось загрузить лайки"}</div>`;
+        } else {
+          toast("❌ " + (err.message || "Не удалось загрузить лайки"));
+        }
+      } finally {
+        likesLoading = false;
       }
     }
 
     function openLikes() {
       likesOverlay.classList.add("show");
-      loadLikes(1);
+      loadLikes(true);
     }
 
     function closeLikes() {
@@ -1291,15 +1343,16 @@
       }
     });
 
-    likesPrev.addEventListener("click", () => {
-      if (likesPage > 1) {
-        loadLikes(likesPage - 1);
-      }
-    });
+    likesList.addEventListener("scroll", () => {
+      if (!likesOverlay.classList.contains("show")) return;
+      if (likesLoading) return;
+      if (likesPage > likesPages) return;
 
-    likesNext.addEventListener("click", () => {
-      if (likesPage < likesPages) {
-        loadLikes(likesPage + 1);
+      const nearBottom =
+        likesList.scrollTop + likesList.clientHeight >= likesList.scrollHeight - 100;
+
+      if (nearBottom) {
+        loadLikes(false);
       }
     });
 
