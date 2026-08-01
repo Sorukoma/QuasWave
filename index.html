@@ -27,8 +27,8 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background:
-                radial-gradient(circle at top left, rgba(94, 70, 255, 0.34), transparent 32%),
-                radial-gradient(circle at bottom right, rgba(0, 194, 255, 0.24), transparent 28%),
+                radial-gradient(circle at top left, rgba(94, 70, 255, 0.38), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(0, 194, 255, 0.28), transparent 28%),
                 #0b0f1a;
             color: #f5f7ff;
             display: flex;
@@ -50,7 +50,7 @@
             padding: 20px 16px 28px;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 16px;
         }
 
         .header {
@@ -68,9 +68,9 @@
         }
 
         .logo {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
+            width: 46px;
+            height: 46px;
+            border-radius: 15px;
             background: linear-gradient(135deg, #7b52ff, #00c2ff);
             display: flex;
             align-items: center;
@@ -78,7 +78,9 @@
             font-weight: 900;
             font-size: 15px;
             flex: 0 0 auto;
-            box-shadow: 0 10px 30px rgba(0, 194, 255, 0.22);
+            box-shadow:
+                0 12px 32px rgba(0, 194, 255, 0.24),
+                inset 0 1px 0 rgba(255, 255, 255, 0.22);
         }
 
         .brand-text {
@@ -86,9 +88,9 @@
         }
 
         .brand-text h1 {
-            font-size: 22px;
+            font-size: 23px;
             line-height: 1.05;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.7px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -104,15 +106,21 @@
             padding: 10px 12px;
             border-radius: 14px;
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.09);
             font-size: 18px;
             line-height: 1;
             flex: 0 0 auto;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transition: transform 0.12s ease, background 0.18s ease;
+        }
+
+        .icon-btn:active {
+            transform: scale(0.93);
         }
 
         .mode-label {
-            padding: 11px 13px;
-            border-radius: 16px;
+            padding: 12px 14px;
+            border-radius: 17px;
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: #d7deff;
@@ -120,14 +128,18 @@
             line-height: 1.35;
             overflow-wrap: anywhere;
             word-break: break-word;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .card {
-            padding: 22px 16px;
-            border-radius: 26px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.26);
+            padding: 24px 16px 18px;
+            border-radius: 28px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow:
+                0 24px 70px rgba(0, 0, 0, 0.30),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -135,19 +147,21 @@
         }
 
         .cover {
-            width: 176px;
-            height: 176px;
+            width: 182px;
+            height: 182px;
             max-width: 100%;
-            border-radius: 26px;
+            border-radius: 28px;
             background:
-                radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.22), transparent 22%),
+                radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.24), transparent 22%),
                 linear-gradient(135deg, #6d4aff, #00c2ff);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 42px;
+            font-size: 44px;
             font-weight: 900;
-            box-shadow: 0 18px 50px rgba(0, 194, 255, 0.2);
+            box-shadow:
+                0 20px 55px rgba(0, 194, 255, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.22);
         }
 
         .track-info {
@@ -157,9 +171,9 @@
         }
 
         .track-title {
-            font-size: 27px;
+            font-size: 28px;
             font-weight: 900;
-            line-height: 1.15;
+            line-height: 1.14;
             overflow-wrap: anywhere;
             word-break: break-word;
         }
@@ -203,29 +217,57 @@
         }
 
         .control-btn {
-            width: 60px;
-            height: 60px;
+            width: 62px;
+            height: 62px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.07));
+            border: 1px solid rgba(255, 255, 255, 0.10);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 25px;
             line-height: 1;
+            box-shadow:
+                0 12px 28px rgba(0, 0, 0, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            transition: transform 0.12s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        .control-btn:active {
+            transform: scale(0.91);
         }
 
         .play-btn {
-            width: 82px;
-            height: 82px;
-            font-size: 34px;
-            background: linear-gradient(135deg, #7b52ff, #00c2ff);
-            box-shadow: 0 16px 40px rgba(0, 194, 255, 0.26);
+            width: 86px;
+            height: 86px;
+            font-size: 36px;
+            background:
+                linear-gradient(135deg, #7b52ff, #00c2ff);
+            box-shadow:
+                0 18px 45px rgba(0, 194, 255, 0.30),
+                inset 0 1px 0 rgba(255, 255, 255, 0.24);
         }
 
-        .footer {
+        .volume-row {
+            width: 100%;
             display: flex;
-            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 0 6px;
+        }
+
+        .volume-row input[type="range"] {
+            flex: 1;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #7f89ad;
+            font-size: 12px;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .backdrop {
@@ -251,8 +293,8 @@
             height: 78vh;
             max-height: 78vh;
             background: #101527;
-            border-top-left-radius: 22px;
-            border-top-right-radius: 22px;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             transform: translateY(100%);
             transition: transform 0.24s ease;
@@ -305,6 +347,12 @@
             overflow-wrap: anywhere;
             word-break: break-word;
             line-height: 1.35;
+            transition: transform 0.12s ease, background 0.18s ease;
+        }
+
+        .like-item:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.10);
         }
 
         .like-item:last-child {
@@ -396,10 +444,15 @@
                 <button id="nextBtn" class="control-btn" title="Следующий">⏭</button>
                 <button id="dislikeBtn" class="control-btn" title="Дизлайк">👎</button>
             </div>
+
+            <div class="volume-row">
+                <button id="muteBtn" class="icon-btn" title="Звук">🔊</button>
+                <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
+            </div>
         </div>
 
-        <div class="footer">
-            <button id="muteBtn" class="icon-btn" title="Звук">🔊</button>
+        <div class="footer-note">
+            Выбор трека из ❤️-лайков запускает плейлист из лайков, а не волну по одному треку.
         </div>
     </div>
 
@@ -422,7 +475,7 @@
     <audio id="audio" preload="auto"></audio>
 
     <script>
-        const APP_VERSION = "20260801-10";
+        const APP_VERSION = "20260801-11";
 
         const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 
@@ -528,6 +581,7 @@
         const likeBtn = document.getElementById("likeBtn");
         const dislikeBtn = document.getElementById("dislikeBtn");
         const muteBtn = document.getElementById("muteBtn");
+        const volumeInput = document.getElementById("volume");
         const openLikesBtn = document.getElementById("openLikesBtn");
         const closeLikesBtn = document.getElementById("closeLikesBtn");
         const likesPanel = document.getElementById("likesPanel");
@@ -583,6 +637,8 @@
 
             if (state.mode === "likes") {
                 text = "❤️ Волна по лайкам";
+            } else if (state.mode === "likes_playlist") {
+                text = "❤️ Плейлист из лайков";
             } else if (state.mode === "artist") {
                 text = "🎤 Волна по исполнителю: " + (state.seedArtist || state.artist || "");
             } else if (state.mode === "track") {
@@ -609,6 +665,16 @@
 
         function updatePlayIcon() {
             playBtn.textContent = audio.paused ? "▶" : "⏸";
+        }
+
+        function updateVolumeIcon() {
+            if (audio.muted || audio.volume <= 0.001) {
+                muteBtn.textContent = "🔇";
+            } else if (audio.volume < 0.5) {
+                muteBtn.textContent = "🔉";
+            } else {
+                muteBtn.textContent = "🔊";
+            }
         }
 
         function setMedia(artist, title, fileUrl, mode, seedArtist, seedTrack) {
@@ -812,6 +878,39 @@
             }
         }
 
+        async function startLikedPlaylist(artist, track, autoplay) {
+            setLoading(true);
+
+            try {
+                const data = await apiFetch(withUser("/api/start_liked_playlist"), {
+                    method: "POST",
+                    json: {
+                        artist: artist,
+                        track: track
+                    }
+                });
+
+                setMedia(
+                    data.artist,
+                    data.title,
+                    data.file_url,
+                    data.mode,
+                    data.seed_artist,
+                    data.seed_track
+                );
+
+                if (autoplay) {
+                    await playAudio();
+                }
+            } catch (e) {
+                console.error("Start liked playlist failed", e);
+                showToast(e.message || "Не удалось запустить плейлист из лайков");
+            } finally {
+                setLoading(false);
+                updatePlayIcon();
+            }
+        }
+
         async function startArtist(artist) {
             setLoading(true);
 
@@ -928,12 +1027,25 @@
 
         muteBtn.addEventListener("click", () => {
             audio.muted = !audio.muted;
-            muteBtn.textContent = audio.muted ? "🔇" : "🔊";
+
+            if (!audio.muted && audio.volume <= 0.001) {
+                audio.volume = 0.7;
+                volumeInput.value = "0.7";
+            }
+
+            updateVolumeIcon();
             haptic("light");
+        });
+
+        volumeInput.addEventListener("input", () => {
+            audio.volume = Number(volumeInput.value || 0);
+            audio.muted = false;
+            updateVolumeIcon();
         });
 
         audio.addEventListener("play", updatePlayIcon);
         audio.addEventListener("pause", updatePlayIcon);
+        audio.addEventListener("volumechange", updateVolumeIcon);
 
         audio.addEventListener("timeupdate", () => {
             if (isFinite(audio.duration) && audio.duration > 0) {
@@ -1029,7 +1141,7 @@
                     row.addEventListener("click", () => {
                         haptic("light");
                         closeLikes();
-                        startTrack(item.artist, item.track, true);
+                        startLikedPlaylist(item.artist, item.track, true);
                     });
 
                     likesList.appendChild(row);
@@ -1071,6 +1183,9 @@
             updateTrackInfo();
         }
 
+        audio.volume = 1;
+        volumeInput.value = "1";
+        updateVolumeIcon();
         updatePlayIcon();
     </script>
 </body>
