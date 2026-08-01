@@ -252,7 +252,7 @@
 
     .meta{
       text-align:center;
-      min-height:96px;
+      min-height:100px;
       display:flex;
       flex-direction:column;
       justify-content:center;
@@ -498,99 +498,44 @@
       pointer-events:auto;
     }
 
-    .start-inner{
-      text-align:center;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:22px;
-      padding:24px;
-      max-width:100%;
-    }
-
-    .logo.big{
-      font-size:26px;
-    }
-
-    .start-q{
-      font-family:"Unbounded", sans-serif;
-      font-weight:700;
-      font-size:clamp(20px, 6vw, 27px);
-    }
-
-    .disc-start{
-      position:relative;
-      border:0;
-      cursor:pointer;
-      width:170px;
-      height:170px;
-      border-radius:50%;
-      background:repeating-radial-gradient(circle, #16333b 0 2px, #0c1e24 2px 5px);
-      box-shadow:0 24px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
-      display:flex;
-      align-items:center;
+    /* Loading теперь не блокирует интерфейс */
+    .overlay.loading{
+      background:transparent;
+      pointer-events:none;
+      align-items:flex-end;
       justify-content:center;
-      transition:transform .15s ease;
-      touch-action:manipulation;
+      padding-bottom:calc(120px + env(safe-area-inset-bottom));
     }
 
-    .disc-start:hover{
-      transform:scale(1.04);
-    }
-
-    .disc-start:active{
-      transform:scale(.95);
-    }
-
-    .disc-start .grooves{
-      position:absolute;
-      inset:0;
-      border-radius:50%;
-      background:conic-gradient(from 0deg, transparent 0 40deg, rgba(255,255,255,.06) 60deg, transparent 90deg 360deg);
-      animation:spin 7s linear infinite;
-    }
-
-    .disc-start .center{
-      position:relative;
-      z-index:1;
-      width:74px;
-      height:74px;
-      border-radius:50%;
-      background:radial-gradient(circle at 34% 28%, var(--gold), var(--coral) 80%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:28px;
-      color:#241008;
-      padding-left:5px;
-      box-shadow:0 10px 30px rgba(255,122,89,.45);
-    }
-
-    .hint{
-      font-size:13px;
-      font-weight:600;
-      color:var(--muted);
-      letter-spacing:.06em;
+    .overlay.loading.show{
+      pointer-events:none;
     }
 
     .loading-inner{
       text-align:center;
       display:flex;
-      flex-direction:column;
+      flex-direction:row;
       align-items:center;
-      gap:20px;
+      justify-content:center;
+      gap:12px;
       max-width:100%;
+      background:rgba(16,42,49,.92);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px 18px;
+      box-shadow:0 14px 34px rgba(0,0,0,.45);
+      backdrop-filter:blur(8px);
     }
 
     .eq{
       display:flex;
       align-items:flex-end;
-      gap:6px;
-      height:44px;
+      gap:4px;
+      height:22px;
     }
 
     .eq i{
-      width:7px;
+      width:4px;
       border-radius:4px;
       background:linear-gradient(180deg, var(--teal), var(--gold));
       animation:eq 0.9s ease-in-out infinite;
@@ -604,9 +549,10 @@
     .eq i:nth-child(5){ height:45%; animation-delay:.48s; }
 
     .loading-text{
-      font-size:15px;
-      font-weight:600;
-      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+      color:var(--ink);
+      white-space:nowrap;
     }
 
     .likes-panel{
@@ -641,6 +587,8 @@
       margin-top:4px;
       font-size:12px;
       color:var(--muted);
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
 
     .likes-head button{
@@ -822,22 +770,10 @@
     </section>
   </main>
 
-  <div class="overlay start show" id="startOverlay">
-    <div class="start-inner">
-      <div class="logo big">QUAS<span>WAVE</span></div>
-      <div class="start-q">Готов слушать?</div>
-      <button class="disc-start" id="startBtn" aria-label="Начать">
-        <span class="grooves"></span>
-        <span class="center">▶</span>
-      </button>
-      <div class="hint">Нажми на пластинку — и поехали</div>
-    </div>
-  </div>
-
   <div class="overlay loading" id="loadingOverlay">
     <div class="loading-inner">
       <div class="eq"><i></i><i></i><i></i><i></i><i></i></div>
-      <div class="loading-text">🎵 Загрузка... Подожди немного</div>
+      <div class="loading-text">Загрузка...</div>
     </div>
   </div>
 
@@ -862,15 +798,13 @@
   <script>
     "use strict";
 
-    const APP_VERSION = "20260801-08";
+    const APP_VERSION = "20260801-09";
     console.log("QuasWave frontend version:", APP_VERSION);
 
     // ВАЖНО:
     // Этот URL должен совпадать с EXTERNAL_URL в wave.py.
     const API_BASE = "https://differences-terminal-identical-egg.trycloudflare.com";
 
-    // Если true — визуализатор будет честный, через WebAudio.
-    // Но на Safari / Telegram WebView это иногда мьютит звук.
     const USE_REAL_VIZ = false;
 
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
@@ -928,8 +862,6 @@
     const knob = document.getElementById("knob");
     const curEl = document.getElementById("cur");
     const durEl = document.getElementById("dur");
-    const startOverlay = document.getElementById("startOverlay");
-    const startBtn = document.getElementById("startBtn");
     const loadingOv = document.getElementById("loadingOverlay");
     const toastEl = document.getElementById("toast");
     const viz = document.getElementById("viz");
@@ -996,13 +928,6 @@
         }
       }
 
-      // Приоритет:
-      // 1. Telegram WebApp user id, если открыто внутри Telegram.
-      // 2. user_id из URL.
-      // 3. user_id из initialTrack.
-      //
-      // На бэке ещё есть проверка initData, поэтому чужой user_id
-      // внутри Telegram должен быть перезаписан реальным.
       if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
         userId = String(tg.initDataUnsafe.user.id);
       } else if (urlUserId) {
@@ -1178,6 +1103,30 @@
       }
     }
 
+    async function playInitialTrack() {
+      if (!initialTrack || !initialTrack.file_url) {
+        loadNextTrack();
+        return;
+      }
+
+      showLoading(true);
+
+      try {
+        setTrack(initialTrack.artist, initialTrack.title);
+        setWaveInfo(initialTrack.mode, initialTrack.seed_artist, initialTrack.seed_track);
+
+        audio.src = initialTrack.file_url;
+        audio.load();
+
+        await playAudio();
+      } catch (err) {
+        console.error("playInitialTrack error:", err);
+        toast("❌ " + (err.message || "Не удалось запустить трек"));
+      } finally {
+        showLoading(false);
+      }
+    }
+
     async function playAudio() {
       try {
         if (audioCtx && audioCtx.state === "suspended") {
@@ -1284,7 +1233,7 @@
 
       if (reset) {
         likesList.innerHTML = '<div class="likes-empty">Загрузка...</div>';
-        likesMeta.textContent = "";
+        likesMeta.textContent = `user_id: ${userId}`;
         likesPage = 1;
         likesPages = 1;
         likesTotal = 0;
@@ -1327,7 +1276,7 @@
         const currentPage = data.page || requestPage;
         likesPage = currentPage + 1;
 
-        likesMeta.textContent = likesTotal ? `всего: ${likesTotal}` : "";
+        likesMeta.textContent = `user_id: ${userId} • всего: ${likesTotal}`;
 
         if ((!data.items || !data.items.length) && reset) {
           likesList.innerHTML = '<div class="likes-empty">Лайков пока нет.<br>Жми 👍 в плеере.</div>';
@@ -1639,16 +1588,17 @@
       bar.classList.remove("active");
     });
 
-    playBtn.addEventListener("click", () => {
+    playBtn.addEventListener("click", async () => {
       haptic("light");
+      ensureAnalyser();
 
       if (!audio.src) {
-        loadNextTrack();
+        await playInitialTrack();
         return;
       }
 
       if (audio.paused) {
-        playAudio();
+        await playAudio();
       } else {
         pauseAudio();
       }
@@ -1681,27 +1631,6 @@
       toast("👎 Трек исключён из волны");
 
       loadNextTrack();
-    });
-
-    startBtn.addEventListener("click", async () => {
-      startOverlay.classList.remove("show");
-      haptic("medium");
-
-      ensureAnalyser();
-
-      if (initialTrack && initialTrack.file_url) {
-        setTrack(initialTrack.artist, initialTrack.title);
-        setWaveInfo(initialTrack.mode, initialTrack.seed_artist, initialTrack.seed_track);
-
-        audio.src = initialTrack.file_url;
-        audio.load();
-
-        await playAudio();
-      } else if (audio.src) {
-        await playAudio();
-      } else {
-        loadNextTrack();
-      }
     });
 
     if (initialTrack && initialTrack.file_url) {
