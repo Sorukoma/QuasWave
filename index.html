@@ -2,12 +2,16 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>QuasWave Player</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
   color-scheme: dark;
+  --accent: #63e6ff;
+  --accent-2: #7b52ff;
+  --danger: #ff2e4d;
+  --track-bg: rgba(255, 255, 255, 0.14);
 }
 * {
   box-sizing: border-box;
@@ -23,13 +27,33 @@ body {
 }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(94, 70, 255, 0.38), transparent 32%),
-    radial-gradient(circle at bottom right, rgba(0, 194, 255, 0.28), transparent 28%),
-    #0b0f1a;
+  background: #0b0f1a;
   color: #f5f7ff;
   display: flex;
   justify-content: center;
+  position: relative;
+}
+/* живой ambient-фон: два медленно дрейфующих пятна */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(94, 70, 255, 0.42), transparent 34%),
+    radial-gradient(circle at 82% 86%, rgba(0, 194, 255, 0.30), transparent 30%),
+    radial-gradient(circle at 60% 40%, rgba(255, 46, 77, 0.10), transparent 40%);
+  filter: blur(8px);
+  animation: ambientDrift 22s ease-in-out infinite alternate;
+}
+@keyframes ambientDrift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-2.5%, 1.5%, 0) scale(1.06); }
+  100% { transform: translate3d(2%, -1.5%, 0) scale(1.03); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
 }
 button {
   border: none;
@@ -63,12 +87,13 @@ button {
   width: 46px;
   height: 46px;
   border-radius: 15px;
-  background: linear-gradient(135deg, #7b52ff, #00c2ff);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
   font-size: 15px;
+  letter-spacing: 0.5px;
   flex: 0 0 auto;
   box-shadow:
     0 12px 32px rgba(0, 194, 255, 0.24),
@@ -80,7 +105,8 @@ button {
 .brand-text h1 {
   font-size: 23px;
   line-height: 1.05;
-  letter-spacing: 0.7px;
+  letter-spacing: 1.5px;
+  font-weight: 900;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -89,6 +115,7 @@ button {
   margin-top: 3px;
   font-size: 12px;
   color: #9aa4c7;
+  letter-spacing: 0.4px;
 }
 .header-actions {
   display: flex;
@@ -160,7 +187,7 @@ button {
 }
 .mode-label.panel-open .mode-chevron {
   transform: rotate(180deg);
-  color: #63e6ff;
+  color: var(--accent);
 }
 .card {
   padding: 24px 16px 18px;
@@ -194,6 +221,12 @@ button {
   box-shadow:
     0 20px 55px rgba(0, 194, 255, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.cover.playing {
+  box-shadow:
+    0 24px 64px rgba(0, 194, 255, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 .cover-img {
   position: absolute;
@@ -203,21 +236,66 @@ button {
   object-fit: cover;
   display: none;
 }
+/* эквалайзер поверх обложки — оживает при play */
+.eq {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  height: 30px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.cover.playing .eq {
+  opacity: 0.92;
+}
+.eq span {
+  width: 5px;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #ffffff, rgba(255, 255, 255, 0.55));
+  transform-origin: bottom center;
+  transform: scaleY(0.25);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+.cover.playing .eq span {
+  animation: eqBar 0.9s ease-in-out infinite;
+}
+.eq span:nth-child(1) { animation-delay: -0.2s; }
+.eq span:nth-child(2) { animation-delay: -0.6s; }
+.eq span:nth-child(3) { animation-delay: -0.4s; }
+.eq span:nth-child(4) { animation-delay: -0.8s; }
+.eq span:nth-child(5) { animation-delay: -0.1s; }
+@keyframes eqBar {
+  0%, 100% { transform: scaleY(0.25); }
+  50%      { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cover.playing .eq span { animation: none; transform: scaleY(0.7); }
+}
 .track-info {
   width: 100%;
   text-align: center;
   min-width: 0;
 }
 .track-title {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 900;
-  line-height: 1.14;
+  line-height: 1.12;
+  letter-spacing: -0.3px;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 .track-artist {
   margin-top: 8px;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
   color: #aab4d8;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -235,11 +313,61 @@ button {
   gap: 10px;
   font-size: 13px;
   color: #9aa4c7;
+  font-variant-numeric: tabular-nums;
 }
+/* ===== range: кастом под все платформы, фикс тача на iOS ===== */
 input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
-  accent-color: #63e6ff;
+  height: 24px;
+  margin: 0;
+  background: transparent;
   cursor: pointer;
+  touch-action: manipulation;
+}
+input[type="range"]:focus {
+  outline: none;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--track-bg);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  box-shadow:
+    0 0 0 4px rgba(99, 230, 255, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.45);
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+  box-shadow:
+    0 0 0 6px rgba(99, 230, 255, 0.30),
+    0 2px 8px rgba(0, 0, 0, 0.45);
+}
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--track-bg);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  box-shadow:
+    0 0 0 4px rgba(99, 230, 255, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.45);
 }
 .controls {
   display: flex;
@@ -263,10 +391,15 @@ input[type="range"] {
   box-shadow:
     0 12px 28px rgba(0, 0, 0, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  transition: transform 0.12s ease, box-shadow 0.18s ease, background 0.18s ease;
+  transition: transform 0.12s ease, box-shadow 0.18s ease, background 0.18s ease, opacity 0.18s ease;
 }
 .control-btn:active {
   transform: scale(0.91);
+}
+.control-btn:disabled {
+  opacity: 0.34;
+  cursor: not-allowed;
+  transform: none;
 }
 .control-btn.liked {
   background:
@@ -280,10 +413,32 @@ input[type="range"] {
   height: 86px;
   font-size: 36px;
   background:
-    linear-gradient(135deg, #7b52ff, #00c2ff);
+    linear-gradient(135deg, var(--accent-2), var(--accent));
   box-shadow:
     0 18px 45px rgba(0, 194, 255, 0.30),
     inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  position: relative;
+}
+.play-btn::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(99, 230, 255, 0.45);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.play-btn.is-playing::after {
+  opacity: 1;
+  animation: playPulse 2.2s ease-out infinite;
+}
+@keyframes playPulse {
+  0%   { transform: scale(0.92); opacity: 0.6; }
+  70%  { transform: scale(1.18); opacity: 0; }
+  100% { transform: scale(1.18); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .play-btn.is-playing::after { animation: none; opacity: 0.4; }
 }
 .volume-row {
   width: 100%;
@@ -291,6 +446,7 @@ input[type="range"] {
   align-items: center;
   gap: 12px;
   padding: 0 6px;
+  touch-action: manipulation;
 }
 .volume-row input[type="range"] {
   flex: 1;
@@ -471,7 +627,7 @@ input[type="range"] {
   width: 18px;
   height: 18px;
   margin-top: 1px;
-  accent-color: #63e6ff;
+  accent-color: var(--accent);
   flex: 0 0 auto;
 }
 .search-field {
@@ -508,7 +664,7 @@ input[type="range"] {
   width: 100%;
   padding: 14px;
   border-radius: 15px;
-  background: linear-gradient(135deg, #7b52ff, #00c2ff);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
   color: #fff;
   font-weight: 800;
   font-size: 15px;
@@ -633,9 +789,12 @@ input[type="range"] {
   </button>
 
   <div class="card">
-    <div class="cover">
+    <div id="cover" class="cover">
       <img id="coverImg" class="cover-img" alt="cover">
       <span id="coverPlaceholder">QW</span>
+      <div class="eq" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
     </div>
 
     <div class="track-info">
@@ -653,6 +812,7 @@ input[type="range"] {
 
     <div class="controls">
       <button id="likeBtn" class="control-btn" title="Лайк">👍</button>
+      <button id="prevBtn" class="control-btn" title="Предыдущий" disabled>⏮</button>
       <button id="playBtn" class="control-btn play-btn" title="Play/Pause">▶</button>
       <button id="nextBtn" class="control-btn" title="Следующий">⏭</button>
       <button id="dislikeBtn" class="control-btn" title="Дизлайк">👎</button>
@@ -667,6 +827,7 @@ input[type="range"] {
   <div class="footer-note">
     Нажми на название волны сверху, чтобы сменить режим.
     Выбор трека из ❤️-лайков запускает плейлист из лайков.
+    ⏮ возвращает к предыдущему треку без загрузки.
   </div>
 </div>
 
@@ -700,7 +861,7 @@ input[type="range"] {
     <button id="modeGlobalBtn" class="mode-option">🌍 Глобальная волна</button>
     <label class="checkbox-row">
       <input id="globalUseLikes" type="checkbox">
-      <span>Учитывать мои последние 10 лайков для формирования глобальной волны</span>
+      <span>Использовать мои последние 10 лайков как семена для анализа глобальной волны</span>
     </label>
   </div>
 </div>
@@ -750,7 +911,7 @@ input[type="range"] {
 <audio id="audio" preload="auto"></audio>
 
 <script>
-const APP_VERSION = "20260801-18";
+const APP_VERSION = "20260802-4";
 
 const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 if (tg) {
@@ -794,8 +955,8 @@ try {
   console.error("Cannot parse initial data", e);
 }
 
-// Для локального cloudflared пока оставляем trycloudflare.
-// Для продакшена это лучше заменить на один точный стабильный домен.
+// Дефолта нет намеренно: api_base должен приехать из кнопки бота,
+// иначе initData может улететь на мёртвый/левый туннель.
 const DEFAULT_API_BASE = "";
 const ALLOWED_API_HOSTS = [
   "trycloudflare.com",
@@ -869,6 +1030,11 @@ const state = {
   artistSearching: false
 };
 
+// История воспроизведения для кнопки ⏮ (живёт только в памяти сессии).
+const playHistory = [];
+const PLAY_HISTORY_MAX = 50;
+let applyingHistory = false;
+
 const audio = document.getElementById("audio");
 const trackTitle = document.getElementById("trackTitle");
 const trackArtist = document.getElementById("trackArtist");
@@ -878,11 +1044,13 @@ const currentTime = document.getElementById("currentTime");
 const duration = document.getElementById("duration");
 const seek = document.getElementById("seek");
 const playBtn = document.getElementById("playBtn");
+const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const likeBtn = document.getElementById("likeBtn");
 const dislikeBtn = document.getElementById("dislikeBtn");
 const muteBtn = document.getElementById("muteBtn");
 const volumeInput = document.getElementById("volume");
+const cover = document.getElementById("cover");
 const coverImg = document.getElementById("coverImg");
 const coverPlaceholder = document.getElementById("coverPlaceholder");
 const downloadBtn = document.getElementById("downloadBtn");
@@ -971,6 +1139,24 @@ function reactionKey(artist, track) {
   return String(artist || "").trim().toLowerCase() + "|||" + String(track || "").trim().toLowerCase();
 }
 
+// Заливка range через gradient — работает на iOS/Android/PC одинаково.
+function updateRangeFill(input) {
+  if (!input) {
+    return;
+  }
+  const min = Number(input.min || 0);
+  const max = Number(input.max || 0);
+  const val = Number(input.value || 0);
+  let pct = 0;
+  if (max > min) {
+    pct = ((val - min) / (max - min)) * 100;
+  }
+  pct = Math.max(0, Math.min(100, pct));
+  input.style.background =
+    "linear-gradient(to right, var(--accent) 0%, var(--accent) " +
+    pct + "%, var(--track-bg) " + pct + "%, var(--track-bg) 100%)";
+}
+
 function modeTitle(mode) {
   if (mode === "likes") return "❤️ волна по лайкам";
   if (mode === "likes_playlist") return "❤️ плейлист из лайков";
@@ -1030,7 +1216,10 @@ function updateDownloadBtn() {
 }
 
 function updatePlayIcon() {
-  playBtn.textContent = audio.paused ? "▶" : "⏸";
+  const playing = !audio.paused;
+  playBtn.textContent = playing ? "⏸" : "▶";
+  playBtn.classList.toggle("is-playing", playing);
+  cover.classList.toggle("playing", playing);
 }
 
 function updateVolumeIcon() {
@@ -1041,6 +1230,46 @@ function updateVolumeIcon() {
   } else {
     muteBtn.textContent = "🔊";
   }
+  updateRangeFill(volumeInput);
+}
+
+function updatePrevBtn() {
+  prevBtn.disabled = playHistory.length === 0;
+}
+
+function snapshotCurrent() {
+  if (!state.artist || !state.title || !state.fileUrl) {
+    return null;
+  }
+  return {
+    artist: state.artist,
+    title: state.title,
+    file_url: state.fileUrl,
+    coverUrl: state.coverUrl,
+    mode: state.mode,
+    seedArtist: state.seedArtist,
+    seedTrack: state.seedTrack,
+    liked: state.liked
+  };
+}
+
+function pushHistory(snap) {
+  if (!snap) {
+    return;
+  }
+  const top = playHistory[playHistory.length - 1];
+  if (
+    top &&
+    reactionKey(top.artist, top.title) === reactionKey(snap.artist, snap.title) &&
+    top.file_url === snap.file_url
+  ) {
+    return;
+  }
+  playHistory.push(snap);
+  if (playHistory.length > PLAY_HISTORY_MAX) {
+    playHistory.shift();
+  }
+  updatePrevBtn();
 }
 
 function canShowPreviousWave() {
@@ -1071,6 +1300,9 @@ function applyTrackData(data) {
   if (!data) {
     return;
   }
+
+  // Снимаем снапшот ДО мутации, чтобы при смене трека сохранить старый в историю.
+  const oldSnap = applyingHistory ? null : snapshotCurrent();
 
   const incomingMode = data.mode || "";
   const newMode = incomingMode || state.mode;
@@ -1104,6 +1336,13 @@ function applyTrackData(data) {
       title: state.title
     };
   }
+
+  const incomingKey = reactionKey(data.artist, data.title || data.track);
+  const incomingUrl = data.file_url || "";
+  const changedTrack =
+    (data.artist && (data.title || data.track)) &&
+    oldSnap &&
+    (reactionKey(oldSnap.artist, oldSnap.title) !== incomingKey || oldSnap.file_url !== incomingUrl);
 
   if (data.artist) {
     state.artist = data.artist;
@@ -1139,6 +1378,10 @@ function applyTrackData(data) {
     }
   }
 
+  if (!applyingHistory && changedTrack) {
+    pushHistory(oldSnap);
+  }
+
   updateTrackInfo();
   updateCover();
   updateLikeBtn();
@@ -1147,6 +1390,7 @@ function applyTrackData(data) {
   if (state.fileUrl) {
     audio.src = state.fileUrl;
     audio.load();
+    updateRangeFill(seek);
   }
 }
 
@@ -1412,6 +1656,32 @@ async function startPreviousWave() {
   }
 }
 
+// Возврат к предыдущему треку из истории — без запроса к бэку.
+function playFromHistory() {
+  if (!playHistory.length) {
+    return;
+  }
+  const prev = playHistory.pop();
+  updatePrevBtn();
+  haptic("medium");
+
+  applyingHistory = true;
+  applyTrackData({
+    artist: prev.artist,
+    title: prev.title,
+    file_url: prev.file_url,
+    cover_url: prev.coverUrl,
+    mode: prev.mode,
+    seed_artist: prev.seedArtist,
+    seed_track: prev.seedTrack,
+    liked: prev.liked
+  });
+  applyingHistory = false;
+
+  audioErrorRetry = false;
+  playAudio();
+}
+
 async function likeCurrent() {
   if (!state.artist || !state.title) {
     showToast("Сначала запусти трек");
@@ -1577,6 +1847,8 @@ playBtn.addEventListener("click", async () => {
   updatePlayIcon();
 });
 
+prevBtn.addEventListener("click", playFromHistory);
+
 nextBtn.addEventListener("click", () => {
   haptic("light");
   requestNext(true);
@@ -1615,6 +1887,7 @@ audio.addEventListener("timeupdate", () => {
     seek.value = Math.floor(audio.currentTime);
     currentTime.textContent = formatTime(audio.currentTime);
     duration.textContent = formatTime(audio.duration);
+    updateRangeFill(seek);
   }
 });
 
@@ -1622,6 +1895,7 @@ audio.addEventListener("loadedmetadata", () => {
   if (isFinite(audio.duration)) {
     seek.max = Math.floor(audio.duration);
     duration.textContent = formatTime(audio.duration);
+    updateRangeFill(seek);
   }
 });
 
@@ -1637,7 +1911,7 @@ audio.addEventListener("error", () => {
       requestNext(true);
       return;
     }
-    showToast("Ошибка аудио. Попробуй следующий трек.");
+    showToast("Ошибка аудио. Попробуй следующий трек или ⏮ назад.");
   }
   updatePlayIcon();
 });
@@ -1651,6 +1925,7 @@ seek.addEventListener("input", () => {
   if (isFinite(audio.duration) && audio.duration > 0 && seek.max) {
     audio.currentTime = (Number(seek.value) / Number(seek.max)) * audio.duration;
     currentTime.textContent = formatTime(audio.currentTime);
+    updateRangeFill(seek);
   }
 });
 
@@ -2145,8 +2420,10 @@ if (initialData && initialData.artist && (initialData.title || initialData.track
 audio.volume = 1;
 volumeInput.value = "1";
 updateVolumeIcon();
+updateRangeFill(seek);
 updatePlayIcon();
 updateDownloadBtn();
+updatePrevBtn();
 loadState();
 
 if (!tg) {
