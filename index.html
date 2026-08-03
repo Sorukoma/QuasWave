@@ -11,33 +11,18 @@
   --accent: #63e6ff;
   --accent-2: #7b52ff;
   --danger: #ff2e4d;
-  --track-bg: rgba(255, 255, 255, 0.14);
+  --track-bg: rgba(255, 255, 255, 0.12);
+  --fill-pct: 0%;
 }
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-html, body {
-  width: 100%;
-  min-height: 100%;
-  overflow-x: hidden;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { width: 100%; min-height: 100%; overflow-x: hidden; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  background: #0b0f1a;
-  color: #f5f7ff;
-  display: flex;
-  justify-content: center;
-  position: relative;
+  background: #0b0f1a; color: #f5f7ff;
+  display: flex; justify-content: center; position: relative;
 }
 body::before {
-  content: "";
-  position: fixed;
-  inset: -20%;
-  z-index: -1;
-  pointer-events: none;
+  content: ""; position: fixed; inset: -20%; z-index: -1; pointer-events: none;
   background:
     radial-gradient(circle at 22% 18%, rgba(94, 70, 255, 0.42), transparent 34%),
     radial-gradient(circle at 82% 86%, rgba(0, 194, 255, 0.30), transparent 30%),
@@ -50,352 +35,145 @@ body::before {
   50%  { transform: translate3d(-2.5%, 1.5%, 0) scale(1.06); }
   100% { transform: translate3d(2%, -1.5%, 0) scale(1.03); }
 }
-@media (prefers-reduced-motion: reduce) {
-  body::before { animation: none; }
-}
-button {
-  border: none;
-  background: none;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.app {
-  width: 100%;
-  max-width: 520px;
-  min-height: 100vh;
-  padding: 20px 16px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
+@media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
+button { border: none; background: none; color: inherit; font: inherit; cursor: pointer; }
+.app { width: 100%; max-width: 520px; min-height: 100vh; padding: 20px 16px 28px; display: flex; flex-direction: column; gap: 16px; }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .logo {
-  width: 46px;
-  height: 46px;
-  border-radius: 15px;
+  width: 46px; height: 46px; border-radius: 15px;
   background: linear-gradient(135deg, var(--accent-2), var(--accent));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  font-size: 15px;
-  letter-spacing: 0.5px;
-  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 15px; letter-spacing: 0.5px; flex: 0 0 auto;
   box-shadow: 0 12px 32px rgba(0, 194, 255, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 .brand-text { min-width: 0; }
-.brand-text h1 {
-  font-size: 23px;
-  line-height: 1.05;
-  letter-spacing: 1.5px;
-  font-weight: 900;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.brand-text p {
-  margin-top: 3px;
-  font-size: 12px;
-  color: #9aa4c7;
-  letter-spacing: 0.4px;
-}
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 0 0 auto;
-}
+.brand-text h1 { font-size: 23px; line-height: 1.05; letter-spacing: 1.5px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brand-text p { margin-top: 3px; font-size: 12px; color: #9aa4c7; letter-spacing: 0.4px; }
+.header-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .icon-btn {
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  font-size: 18px;
-  line-height: 1;
-  flex: 0 0 auto;
+  padding: 10px 12px; border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.09);
+  font-size: 18px; line-height: 1; flex: 0 0 auto;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transition: transform 0.12s ease, background 0.18s ease;
 }
 .icon-btn:active { transform: scale(0.93); }
 .icon-btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none; }
 .mode-label {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 13px 16px;
-  border-radius: 17px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #d7deff;
-  font-size: 14px;
-  line-height: 1.35;
-  text-align: left;
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 13px 16px; border-radius: 17px;
+  background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #d7deff; font-size: 14px; line-height: 1.35; text-align: left;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 .mode-label:active { transform: scale(0.985); }
 .mode-label:hover { background: rgba(255, 255, 255, 0.10); border-color: rgba(99, 230, 255, 0.30); }
-.mode-label.panel-open {
-  background: rgba(99, 230, 255, 0.12);
-  border-color: rgba(99, 230, 255, 0.45);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(99, 230, 255, 0.18);
-}
+.mode-label.panel-open { background: rgba(99, 230, 255, 0.12); border-color: rgba(99, 230, 255, 0.45); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(99, 230, 255, 0.18); }
 .mode-label-text { flex: 1; min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
 .mode-chevron { flex: 0 0 auto; font-size: 13px; color: #9aa4c7; transition: transform 0.24s ease, color 0.18s ease; }
 .mode-label.panel-open .mode-chevron { transform: rotate(180deg); color: var(--accent); }
 .card {
-  padding: 24px 16px 18px;
-  border-radius: 28px;
+  padding: 24px 16px 18px; border-radius: 28px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.05));
   border: 1px solid rgba(255, 255, 255, 0.09);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
 }
 .cover {
-  position: relative;
-  width: 182px;
-  height: 182px;
-  max-width: 100%;
-  border-radius: 28px;
-  overflow: hidden;
-  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.24), transparent 22%),
-    linear-gradient(135deg, #6d4aff, #00c2ff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 44px;
-  font-weight: 900;
+  position: relative; width: 182px; height: 182px; max-width: 100%; border-radius: 28px; overflow: hidden;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.24), transparent 22%), linear-gradient(135deg, #6d4aff, #00c2ff);
+  display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 900;
   box-shadow: 0 20px 55px rgba(0, 194, 255, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.22);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 .cover.playing { box-shadow: 0 24px 64px rgba(0, 194, 255, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.22); }
 .cover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
-.eq {
-  position: absolute;
-  left: 0; right: 0; bottom: 12px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 5px;
-  height: 30px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
+.eq { position: absolute; left: 0; right: 0; bottom: 12px; display: flex; align-items: flex-end; justify-content: center; gap: 5px; height: 30px; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
 .cover.playing .eq { opacity: 0.92; }
-.eq span {
-  width: 5px;
-  height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #ffffff, rgba(255, 255, 255, 0.55));
-  transform-origin: bottom center;
-  transform: scaleY(0.25);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-}
+.eq span { width: 5px; height: 100%; border-radius: 3px; background: linear-gradient(180deg, #ffffff, rgba(255, 255, 255, 0.55)); transform-origin: bottom center; transform: scaleY(0.25); box-shadow: 0 0 8px rgba(255, 255, 255, 0.5); }
 .cover.playing .eq span { animation: eqBar 0.9s ease-in-out infinite; }
 .eq span:nth-child(1) { animation-delay: -0.2s; }
 .eq span:nth-child(2) { animation-delay: -0.6s; }
 .eq span:nth-child(3) { animation-delay: -0.4s; }
 .eq span:nth-child(4) { animation-delay: -0.8s; }
 .eq span:nth-child(5) { animation-delay: -0.1s; }
-@keyframes eqBar {
-  0%, 100% { transform: scaleY(0.25); }
-  50%      { transform: scaleY(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .cover.playing .eq span { animation: none; transform: scaleY(0.7); }
-}
+@keyframes eqBar { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .cover.playing .eq span { animation: none; transform: scaleY(0.7); } }
 .track-info { width: 100%; text-align: center; min-width: 0; }
-.track-title {
-  font-size: 30px;
-  font-weight: 900;
-  line-height: 1.12;
-  letter-spacing: -0.3px;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-.track-artist {
-  margin-top: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  color: #aab4d8;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
+.track-title { font-size: 30px; font-weight: 900; line-height: 1.12; letter-spacing: -0.3px; overflow-wrap: anywhere; word-break: break-word; }
+.track-artist { margin-top: 8px; font-size: 16px; font-weight: 500; letter-spacing: 0.3px; color: #aab4d8; overflow-wrap: anywhere; word-break: break-word; }
 .progress { width: 100%; display: flex; flex-direction: column; gap: 8px; }
-.time-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 13px;
-  color: #9aa4c7;
-  font-variant-numeric: tabular-nums;
-}
+.time-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; color: #9aa4c7; font-variant-numeric: tabular-nums; }
+
+/* ===== ПОЛЗУНКИ: тонкая полоска + точка, без фона ===== */
 input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 24px;
-  margin: 0;
-  background: transparent;
-  cursor: pointer;
-  touch-action: manipulation;
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 28px; margin: 0;
+  background: transparent; cursor: pointer; touch-action: manipulation;
 }
 input[type="range"]:focus { outline: none; }
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 6px;
-  border-radius: 999px;
-  background: var(--track-bg);
+  height: 3px; border-radius: 2px;
+  background: linear-gradient(to right, var(--accent) var(--fill-pct, 0%), var(--track-bg) var(--fill-pct, 0%));
 }
 input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  margin-top: -7px;
-  border-radius: 50%;
-  background: #fff;
-  border: none;
-  box-shadow: 0 0 0 4px rgba(99, 230, 255, 0.22), 0 2px 8px rgba(0, 0, 0, 0.45);
-  transition: box-shadow 0.15s ease, transform 0.1s ease;
+  -webkit-appearance: none; appearance: none;
+  width: 14px; height: 14px; margin-top: -5.5px; border-radius: 50%;
+  background: #fff; border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s ease;
 }
-input[type="range"]:active::-webkit-slider-thumb {
-  transform: scale(1.12);
-  box-shadow: 0 0 0 6px rgba(99, 230, 255, 0.30), 0 2px 8px rgba(0, 0, 0, 0.45);
-}
-input[type="range"]::-moz-range-track {
-  height: 6px;
-  border-radius: 999px;
-  background: var(--track-bg);
-}
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.2); }
+input[type="range"]::-moz-range-track { height: 3px; border-radius: 2px; background: var(--track-bg); }
+input[type="range"]::-moz-range-progress { height: 3px; border-radius: 2px; background: var(--accent); }
 input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #fff;
-  border: none;
-  box-shadow: 0 0 0 4px rgba(99, 230, 255, 0.22), 0 2px 8px rgba(0, 0, 0, 0.45);
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #fff; border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* ===== КНОПКИ УПРАВЛЕНИЯ: grid, всегда один ряд ===== */
+/* ===== КНОПКИ: grid ===== */
 .controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr;
-  gap: 10px;
-  align-items: center;
-  justify-items: center;
-  width: 100%;
-  max-width: 380px;
+  display: grid; grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr;
+  gap: 10px; align-items: center; justify-items: center;
+  width: 100%; max-width: 380px;
 }
 .control-btn {
-  width: 100%;
-  max-width: 58px;
-  aspect-ratio: 1;
-  border-radius: 50%;
+  width: 100%; max-width: 58px; aspect-ratio: 1; border-radius: 50%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.07));
   border: 1px solid rgba(255, 255, 255, 0.10);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; line-height: 1;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: transform 0.12s ease, box-shadow 0.18s ease, background 0.18s ease, opacity 0.18s ease;
 }
 .control-btn:active { transform: scale(0.91); }
 .control-btn:disabled { opacity: 0.34; cursor: not-allowed; transform: none; }
-.control-btn.liked {
-  background: linear-gradient(135deg, #ff4d67, #ff2e4d);
-  box-shadow: 0 14px 34px rgba(255, 46, 77, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
+.control-btn.liked { background: linear-gradient(135deg, #ff4d67, #ff2e4d); box-shadow: 0 14px 34px rgba(255, 46, 77, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.22); }
 .play-btn {
-  max-width: 82px;
-  font-size: 32px;
+  max-width: 82px; font-size: 32px;
   background: linear-gradient(135deg, var(--accent-2), var(--accent));
   box-shadow: 0 18px 45px rgba(0, 194, 255, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.24);
   position: relative;
 }
-.play-btn::after {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 2px solid rgba(99, 230, 255, 0.45);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
+.play-btn::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(99, 230, 255, 0.45); opacity: 0; transition: opacity 0.3s ease; }
 .play-btn.is-playing::after { opacity: 1; animation: playPulse 2.2s ease-out infinite; }
-@keyframes playPulse {
-  0%   { transform: scale(0.92); opacity: 0.6; }
-  70%  { transform: scale(1.18); opacity: 0; }
-  100% { transform: scale(1.18); opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .play-btn.is-playing::after { animation: none; opacity: 0.4; }
-}
-@media (max-width: 360px) {
-  .controls { gap: 7px; max-width: 320px; }
-  .control-btn { font-size: 19px; }
-  .play-btn { font-size: 28px; }
-}
-
-.volume-row {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 6px;
-  touch-action: manipulation;
-}
+@keyframes playPulse { 0% { transform: scale(0.92); opacity: 0.6; } 70% { transform: scale(1.18); opacity: 0; } 100% { transform: scale(1.18); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .play-btn.is-playing::after { animation: none; opacity: 0.4; } }
+@media (max-width: 360px) { .controls { gap: 7px; max-width: 320px; } .control-btn { font-size: 19px; } .play-btn { font-size: 28px; } }
+.volume-row { width: 100%; display: flex; align-items: center; gap: 12px; padding: 0 6px; touch-action: manipulation; }
 .volume-row input[type="range"] { flex: 1; }
-.footer-note {
-  text-align: center;
-  color: #7f89ad;
-  font-size: 12px;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-.backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.38);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  z-index: 25;
-}
+.footer-note { text-align: center; color: #7f89ad; font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; word-break: break-word; }
+.backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.38); opacity: 0; pointer-events: none; transition: opacity 0.2s ease; z-index: 25; }
 .backdrop.show { opacity: 1; pointer-events: auto; }
 .likes-panel, .modes-panel, .search-panel {
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  background: #101527;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background: #101527; border-top-left-radius: 24px; border-top-right-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  transform: translateY(100%);
-  transition: transform 0.24s ease;
-  display: flex;
-  flex-direction: column;
+  transform: translateY(100%); transition: transform 0.24s ease;
+  display: flex; flex-direction: column;
   box-shadow: 0 -20px 70px rgba(0, 0, 0, 0.4);
 }
 .likes-panel { height: 78vh; max-height: 78vh; z-index: 30; }
@@ -403,221 +181,67 @@ input[type="range"]::-moz-range-thumb {
 .search-panel { z-index: 36; max-height: 86vh; }
 .artist-panel { z-index: 37; max-height: 86vh; }
 .likes-panel.open, .modes-panel.open, .search-panel.open, .artist-panel.open { transform: translateY(0); }
-.panel-header {
-  padding: 16px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
+.panel-header { padding: 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
 .panel-title { font-size: 20px; font-weight: 900; }
 .panel-subtitle { margin-top: 6px; font-size: 12px; color: #9aa4c7; overflow-wrap: anywhere; word-break: break-word; }
 .likes-list { flex: 1; overflow-y: auto; padding: 12px; -webkit-overflow-scrolling: touch; }
-.like-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 9px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  overflow: hidden;
-  transition: opacity 0.22s ease, transform 0.22s ease;
-}
+.like-item { width: 100%; display: flex; align-items: center; gap: 8px; margin-bottom: 9px; border-radius: 16px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.07); overflow: hidden; transition: opacity 0.22s ease, transform 0.22s ease; }
 .like-item.removing { opacity: 0; transform: translateX(28px); }
 .like-item:last-child { margin-bottom: 0; }
-.like-item-text {
-  flex: 1;
-  min-width: 0;
-  text-align: left;
-  padding: 13px 6px 13px 14px;
-  cursor: pointer;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  line-height: 1.35;
-  transition: background 0.18s ease;
-}
+.like-item-text { flex: 1; min-width: 0; text-align: left; padding: 13px 6px 13px 14px; cursor: pointer; overflow-wrap: anywhere; word-break: break-word; line-height: 1.35; transition: background 0.18s ease; }
 .like-item-text:active { background: rgba(255, 255, 255, 0.10); }
-.like-del {
-  flex: 0 0 auto;
-  align-self: stretch;
-  padding: 0 14px;
-  font-size: 16px;
-  line-height: 1;
-  color: #ff8a9b;
-  background: rgba(255, 77, 103, 0.08);
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
-  transition: background 0.18s ease, transform 0.12s ease;
-}
+.like-del { flex: 0 0 auto; align-self: stretch; padding: 0 14px; font-size: 16px; line-height: 1; color: #ff8a9b; background: rgba(255, 77, 103, 0.08); border-left: 1px solid rgba(255, 255, 255, 0.06); transition: background 0.18s ease, transform 0.12s ease; }
 .like-del:active { transform: scale(0.9); background: rgba(255, 46, 77, 0.30); }
-.mode-option {
-  width: 100%;
-  text-align: left;
-  padding: 13px 14px;
-  margin-bottom: 9px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  cursor: pointer;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  line-height: 1.35;
-  transition: transform 0.12s ease, background 0.18s ease;
-}
+.mode-option { width: 100%; text-align: left; padding: 13px 14px; margin-bottom: 9px; border-radius: 16px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.07); cursor: pointer; overflow-wrap: anywhere; word-break: break-word; line-height: 1.35; transition: transform 0.12s ease, background 0.18s ease; }
 .mode-option:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.10); }
 .mode-option:last-child { margin-bottom: 0; }
 .modes-body, .search-body { padding: 12px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.checkbox-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 13px 14px;
-  margin-bottom: 9px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  line-height: 1.35;
-}
+.checkbox-row { display: flex; align-items: flex-start; gap: 10px; padding: 13px 14px; margin-bottom: 9px; border-radius: 16px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.07); line-height: 1.35; }
 .checkbox-row input { width: 18px; height: 18px; margin-top: 1px; accent-color: var(--accent); flex: 0 0 auto; }
 .search-field { margin-bottom: 12px; }
 .search-field label { display: block; margin-bottom: 6px; font-size: 12px; color: #9aa4c7; letter-spacing: 0.3px; }
-.search-input {
-  width: 100%;
-  padding: 13px 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  color: #f5f7ff;
-  font: inherit;
-  font-size: 15px;
-  outline: none;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-}
+.search-input { width: 100%; padding: 13px 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.10); color: #f5f7ff; font: inherit; font-size: 15px; outline: none; transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
 .search-input::placeholder { color: #6f7aa0; }
-.search-input:focus {
-  border-color: rgba(99, 230, 255, 0.55);
-  background: rgba(99, 230, 255, 0.06);
-  box-shadow: 0 0 0 3px rgba(99, 230, 255, 0.14);
-}
-.search-go {
-  width: 100%;
-  padding: 14px;
-  border-radius: 15px;
-  background: linear-gradient(135deg, var(--accent-2), var(--accent));
-  color: #fff;
-  font-weight: 800;
-  font-size: 15px;
-  letter-spacing: 0.3px;
-  box-shadow: 0 14px 34px rgba(0, 194, 255, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  transition: transform 0.12s ease, filter 0.18s ease;
-}
+.search-input:focus { border-color: rgba(99, 230, 255, 0.55); background: rgba(99, 230, 255, 0.06); box-shadow: 0 0 0 3px rgba(99, 230, 255, 0.14); }
+.search-go { width: 100%; padding: 14px; border-radius: 15px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #fff; font-weight: 800; font-size: 15px; letter-spacing: 0.3px; box-shadow: 0 14px 34px rgba(0, 194, 255, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.22); transition: transform 0.12s ease, filter 0.18s ease; }
 .search-go:active { transform: scale(0.98); filter: brightness(1.06); }
 .search-go:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .search-results { margin-top: 14px; display: flex; flex-direction: column; gap: 9px; }
-.search-empty {
-  padding: 16px 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px dashed rgba(255, 255, 255, 0.12);
-  color: #9aa4c7;
-  font-size: 13px;
-  line-height: 1.4;
-  text-align: center;
-}
-.search-item {
-  width: 100%;
-  text-align: left;
-  padding: 13px 14px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  cursor: pointer;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  line-height: 1.35;
-  transition: transform 0.12s ease, background 0.18s ease;
-}
+.search-empty { padding: 16px 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.04); border: 1px dashed rgba(255, 255, 255, 0.12); color: #9aa4c7; font-size: 13px; line-height: 1.4; text-align: center; }
+.search-item { width: 100%; text-align: left; padding: 13px 14px; border-radius: 16px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.07); cursor: pointer; overflow-wrap: anywhere; word-break: break-word; line-height: 1.35; transition: transform 0.12s ease, background 0.18s ease; }
 .search-item:active { transform: scale(0.98); background: rgba(99, 230, 255, 0.12); }
 .search-item-artist { display: block; margin-top: 3px; font-size: 12px; color: #9aa4c7; }
-.loading {
-  position: fixed;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%) translateY(16px);
-  padding: 9px 14px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.62);
-  color: #fff;
-  font-size: 14px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
-  z-index: 50;
-}
+.loading { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%) translateY(16px); padding: 9px 14px; border-radius: 999px; background: rgba(0, 0, 0, 0.62); color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity 0.18s ease, transform 0.18s ease; z-index: 50; }
 .loading.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.toast {
-  position: fixed;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-18px);
-  max-width: calc(100vw - 24px);
-  padding: 10px 14px;
-  border-radius: 14px;
-  background: rgba(15, 18, 30, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
-  font-size: 14px;
-  line-height: 1.3;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
-  z-index: 60;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
+.toast { position: fixed; top: 14px; left: 50%; transform: translateX(-50%) translateY(-18px); max-width: calc(100vw - 24px); padding: 10px 14px; border-radius: 14px; background: rgba(15, 18, 30, 0.92); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; font-size: 14px; line-height: 1.3; opacity: 0; pointer-events: none; transition: opacity 0.18s ease, transform 0.18s ease; z-index: 60; overflow-wrap: anywhere; word-break: break-word; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <div class="brand">
-      <div class="logo">QW</div>
-      <div class="brand-text">
-        <h1>QUASWAVE</h1>
-        <p>волна last.fm</p>
-      </div>
-    </div>
+    <div class="brand"><div class="logo">QW</div><div class="brand-text"><h1>QUASWAVE</h1><p>волна last.fm</p></div></div>
     <div class="header-actions">
       <button id="downloadBtn" class="icon-btn" title="Скачать трек в Telegram" disabled>⬇️</button>
       <button id="openLikesBtn" class="icon-btn" title="Лайки">❤️</button>
     </div>
   </div>
-
   <button id="modeLabel" class="mode-label" title="Сменить режим волны">
     <span id="modeLabelText" class="mode-label-text">🎵 Волна QuasWave</span>
     <span id="modeChevron" class="mode-chevron">▾</span>
   </button>
-
   <div class="card">
     <div id="cover" class="cover">
       <img id="coverImg" class="cover-img" alt="cover">
       <span id="coverPlaceholder">QW</span>
-      <div class="eq" aria-hidden="true">
-        <span></span><span></span><span></span><span></span><span></span>
-      </div>
+      <div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
     <div class="track-info">
       <div id="trackTitle" class="track-title">Готов слушать?</div>
       <div id="trackArtist" class="track-artist">QuasWave</div>
     </div>
     <div class="progress">
-      <div class="time-row">
-        <span id="currentTime">0:00</span>
-        <span id="duration">0:00</span>
-      </div>
+      <div class="time-row"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
       <input id="seek" type="range" min="0" max="0" step="1" value="0">
     </div>
     <div class="controls">
@@ -632,35 +256,15 @@ input[type="range"]::-moz-range-thumb {
       <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
     </div>
   </div>
-
-  <div class="footer-note">
-    Нажми на название волны сверху, чтобы сменить режим.
-    Выбор трека из ❤️-лайков запускает плейлист из лайков.
-    ⏮ возвращает к предыдущему треку без загрузки.
-  </div>
+  <div class="footer-note">Нажми на название волны сверху, чтобы сменить режим. Выбор трека из ❤️-лайков запускает плейлист из лайков. ⏮ возвращает к предыдущему треку без загрузки.</div>
 </div>
-
 <div id="backdrop" class="backdrop"></div>
-
 <div id="likesPanel" class="likes-panel">
-  <div class="panel-header">
-    <div>
-      <div class="panel-title">❤️ Лайки</div>
-      <div id="likesUser" class="panel-subtitle">user_id: ...</div>
-    </div>
-    <button id="closeLikesBtn" class="icon-btn" title="Закрыть">✖️</button>
-  </div>
+  <div class="panel-header"><div><div class="panel-title">❤️ Лайки</div><div id="likesUser" class="panel-subtitle">user_id: ...</div></div><button id="closeLikesBtn" class="icon-btn" title="Закрыть">✖️</button></div>
   <div id="likesList" class="likes-list"></div>
 </div>
-
 <div id="modesPanel" class="modes-panel">
-  <div class="panel-header">
-    <div>
-      <div class="panel-title">🧭 Режимы волны</div>
-      <div class="panel-subtitle">Переключение без возврата в бота</div>
-    </div>
-    <button id="closeModesBtn" class="icon-btn" title="Закрыть">✖️</button>
-  </div>
+  <div class="panel-header"><div><div class="panel-title">🧭 Режимы волны</div><div class="panel-subtitle">Переключение без возврата в бота</div></div><button id="closeModesBtn" class="icon-btn" title="Закрыть">✖️</button></div>
   <div class="modes-body">
     <button id="previousWaveBtn" class="mode-option" style="display:none;">↩️ Вернуться к прошлой волне</button>
     <button id="modeTrackBtn" class="mode-option">🎶 Волна по конкретному треку</button>
@@ -668,159 +272,63 @@ input[type="range"]::-moz-range-thumb {
     <button id="modePlaylistBtn" class="mode-option">❤️ Плейлист из лайков</button>
     <button id="modeArtistBtn" class="mode-option">🎤 Волна по исполнителю</button>
     <button id="modeGlobalBtn" class="mode-option">🌍 Глобальная волна</button>
-    <label class="checkbox-row">
-      <input id="globalUseLikes" type="checkbox">
-      <span>Использовать мои последние 10 лайков как семена для анализа глобальной волны</span>
-    </label>
+    <label class="checkbox-row"><input id="globalUseLikes" type="checkbox"><span>Использовать мои последние 10 лайков как семена для анализа глобальной волны</span></label>
   </div>
 </div>
-
 <div id="searchPanel" class="search-panel">
-  <div class="panel-header">
-    <div>
-      <div class="panel-title">🔎 Поиск трека</div>
-      <div class="panel-subtitle">Введи название и, по желанию, исполнителя — дам выбрать из вариантов</div>
-    </div>
-    <button id="closeSearchBtn" class="icon-btn" title="Закрыть">✖️</button>
-  </div>
+  <div class="panel-header"><div><div class="panel-title">🔎 Поиск трека</div><div class="panel-subtitle">Введи название и, по желанию, исполнителя — дам выбрать из вариантов</div></div><button id="closeSearchBtn" class="icon-btn" title="Закрыть">✖️</button></div>
   <div class="search-body">
-    <div class="search-field">
-      <label for="searchTrackInput">Название трека</label>
-      <input id="searchTrackInput" class="search-input" type="text" placeholder="Например: Believer" autocomplete="off">
-    </div>
-    <div class="search-field">
-      <label for="searchArtistInput">Исполнитель (необязательно)</label>
-      <input id="searchArtistInput" class="search-input" type="text" placeholder="Например: Imagine Dragons" autocomplete="off">
-    </div>
+    <div class="search-field"><label for="searchTrackInput">Название трека</label><input id="searchTrackInput" class="search-input" type="text" placeholder="Например: Believer" autocomplete="off"></div>
+    <div class="search-field"><label for="searchArtistInput">Исполнитель (необязательно)</label><input id="searchArtistInput" class="search-input" type="text" placeholder="Например: Imagine Dragons" autocomplete="off"></div>
     <button id="searchGoBtn" class="search-go">Искать</button>
     <div id="searchResults" class="search-results"></div>
   </div>
 </div>
-
 <div id="artistPanel" class="search-panel artist-panel">
-  <div class="panel-header">
-    <div>
-      <div class="panel-title">🎤 Поиск исполнителя</div>
-      <div class="panel-subtitle">Введи исполнителя — дам выбрать из вариантов</div>
-    </div>
-    <button id="closeArtistBtn" class="icon-btn" title="Закрыть">✖️</button>
-  </div>
+  <div class="panel-header"><div><div class="panel-title">🎤 Поиск исполнителя</div><div class="panel-subtitle">Введи исполнителя — дам выбрать из вариантов</div></div><button id="closeArtistBtn" class="icon-btn" title="Закрыть">✖️</button></div>
   <div class="search-body">
-    <div class="search-field">
-      <label for="artistSearchInput">Исполнитель</label>
-      <input id="artistSearchInput" class="search-input" type="text" placeholder="Например: Imagine Dragons" autocomplete="off">
-    </div>
+    <div class="search-field"><label for="artistSearchInput">Исполнитель</label><input id="artistSearchInput" class="search-input" type="text" placeholder="Например: Imagine Dragons" autocomplete="off"></div>
     <button id="artistSearchGoBtn" class="search-go">Искать</button>
     <div id="artistSearchResults" class="search-results"></div>
   </div>
 </div>
-
 <div id="loading" class="loading">Загрузка...</div>
 <div id="toast" class="toast"></div>
 <audio id="audio" preload="auto"></audio>
 
 <script>
-const APP_VERSION = "20260802-7";
-
+const APP_VERSION = "20260802-8";
 const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-if (tg) {
-  try {
-    tg.ready();
-    tg.expand();
-    if (tg.setHeaderColor) { tg.setHeaderColor("#0b0f1a"); }
-  } catch (e) { console.error("Telegram WebApp init failed", e); }
-}
-
+if (tg) { try { tg.ready(); tg.expand(); if (tg.setHeaderColor) { tg.setHeaderColor("#0b0f1a"); } } catch (e) { console.error("Telegram WebApp init failed", e); } }
 const params = new URLSearchParams(window.location.search);
-
-function b64ToUtf8(base64) {
-  const binary = atob(base64);
-  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-  return new TextDecoder().decode(bytes);
-}
-
-function decodeB64UrlSafe(value) {
-  if (!value) { return ""; }
-  let base64 = value.replace(/-/g, "+").replace(/_/g, "/");
-  while (base64.length % 4) { base64 += "="; }
-  return b64ToUtf8(base64);
-}
-
+function b64ToUtf8(b) { const bin = atob(b); return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))); }
+function decodeB64UrlSafe(v) { if (!v) return ""; let b = v.replace(/-/g, "+").replace(/_/g, "/"); while (b.length % 4) b += "="; return b64ToUtf8(b); }
 let initialData = {};
-try {
-  const rawData = params.get("data");
-  if (rawData) { initialData = JSON.parse(decodeB64UrlSafe(rawData)); }
-} catch (e) { console.error("Cannot parse initial data", e); }
-
+try { const raw = params.get("data"); if (raw) initialData = JSON.parse(decodeB64UrlSafe(raw)); } catch (e) { console.error("Cannot parse initial data", e); }
 const DEFAULT_API_BASE = "";
-const ALLOWED_API_HOSTS = [
-  "trycloudflare.com",
-  "sorukoma.github.io",
-  "mooo.com"
-];
-
+const ALLOWED_API_HOSTS = ["trycloudflare.com", "sorukoma.github.io", "mooo.com"];
 function isAllowedApiBase(value) {
-  try {
-    if (!value) { return false; }
-    const url = new URL(value);
-    if (url.protocol !== "https:") { return false; }
-    return ALLOWED_API_HOSTS.some((host) => {
-      return url.hostname === host || url.hostname.endsWith("." + host);
-    });
+  try { if (!value) return false; const url = new URL(value); if (url.protocol !== "https:") return false;
+    return ALLOWED_API_HOSTS.some(h => url.hostname === h || url.hostname.endsWith("." + h));
   } catch (e) { return false; }
 }
-
 let apiBase = DEFAULT_API_BASE;
-try {
-  const apiParam = params.get("api_base");
-  if (apiParam) {
-    const decodedApiBase = decodeB64UrlSafe(apiParam);
-    if (isAllowedApiBase(decodedApiBase)) {
-      apiBase = decodedApiBase;
-    } else {
-      console.warn("api_base from URL ignored because it is not allowed");
-    }
-  }
-} catch (e) { console.error("Cannot parse api_base", e); }
+try { const ap = params.get("api_base"); if (ap) { const d = decodeB64UrlSafe(ap); if (isAllowedApiBase(d)) apiBase = d; else console.warn("api_base ignored"); } } catch (e) { console.error("Cannot parse api_base", e); }
 apiBase = (apiBase || "").replace(/\/+$/g, "");
-
-function firstDefined(...values) {
-  for (const value of values) {
-    if (value !== undefined && value !== null && String(value).length > 0) {
-      return String(value);
-    }
-  }
-  return "";
-}
-
-const tgUserId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id
-  ? String(tg.initDataUnsafe.user.id) : "";
-
+function firstDefined(...vals) { for (const v of vals) { if (v !== undefined && v !== null && String(v).length > 0) return String(v); } return ""; }
+const tgUserId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id ? String(tg.initDataUnsafe.user.id) : "";
 const state = {
   userId: firstDefined(tgUserId, initialData.user_id, params.get("user_id"), "0"),
-  artist: initialData.artist || "",
-  title: initialData.title || initialData.track || "",
-  fileUrl: initialData.file_url || "",
-  coverUrl: initialData.cover_url || "",
-  mode: initialData.mode || "",
-  seedArtist: initialData.seed_artist || "",
-  seedTrack: initialData.seed_track || "",
-  liked: !!initialData.liked,
-  globalUseLikes: false,
-  previousWave: null,
-  likesPage: 1,
-  likesPages: 1,
-  likesLoading: false,
-  likesLoaded: false,
-  nextLoading: false,
-  searching: false,
-  artistSearching: false
+  artist: initialData.artist || "", title: initialData.title || initialData.track || "",
+  fileUrl: initialData.file_url || "", coverUrl: initialData.cover_url || "",
+  mode: initialData.mode || "", seedArtist: initialData.seed_artist || "", seedTrack: initialData.seed_track || "",
+  liked: !!initialData.liked, globalUseLikes: false, previousWave: null,
+  likesPage: 1, likesPages: 1, likesLoading: false, likesLoaded: false,
+  nextLoading: false, searching: false, artistSearching: false
 };
-
 const playHistory = [];
 const PLAY_HISTORY_MAX = 50;
 let applyingHistory = false;
-
 const audio = document.getElementById("audio");
 const trackTitle = document.getElementById("trackTitle");
 const trackArtist = document.getElementById("trackArtist");
@@ -868,58 +376,31 @@ const artistSearchGoBtn = document.getElementById("artistSearchGoBtn");
 const artistSearchResults = document.getElementById("artistSearchResults");
 const loading = document.getElementById("loading");
 const toast = document.getElementById("toast");
-
 let toastTimer = null;
 let audioErrorRetry = false;
 
-function haptic(style) {
-  try {
-    if (tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred) {
-      tg.HapticFeedback.impactOccurred(style || "light");
-    }
-  } catch (e) { console.error("Haptic failed", e); }
+/* ===== ГРОМКОСТЬ: localStorage ===== */
+const VOL_KEY = "quaswave_volume";
+function loadVolume() {
+  try { const v = localStorage.getItem(VOL_KEY); if (v !== null) { const n = parseFloat(v); if (isFinite(n) && n >= 0 && n <= 1) return n; } } catch (e) {}
+  return 1;
 }
+function saveVolume(v) { try { localStorage.setItem(VOL_KEY, String(v)); } catch (e) {} }
 
-function showToast(message) {
-  toast.textContent = message;
-  toast.classList.add("show");
-  if (toastTimer) { clearTimeout(toastTimer); }
-  toastTimer = setTimeout(() => { toast.classList.remove("show"); }, 2600);
-}
-
+function haptic(style) { try { if (tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred) tg.HapticFeedback.impactOccurred(style || "light"); } catch (e) {} }
+function showToast(msg) { toast.textContent = msg; toast.classList.add("show"); if (toastTimer) clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove("show"), 2600); }
 function setLoading(on) { loading.classList.toggle("show", !!on); }
+function formatTime(s) { if (!isFinite(s) || s < 0) return "0:00"; const t = Math.floor(s); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); }
+function formatListeners(v) { const n = Number(v || 0); if (!isFinite(n) || n <= 0) return ""; if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M"; if (n >= 1e3) return Math.round(n / 1e3) + "K"; return String(n); }
+function reactionKey(a, t) { return String(a || "").trim().toLowerCase() + "|||" + String(t || "").trim().toLowerCase(); }
 
-function formatTime(seconds) {
-  if (!isFinite(seconds) || seconds < 0) { return "0:00"; }
-  const total = Math.floor(seconds);
-  const minutes = Math.floor(total / 60);
-  const rest = total % 60;
-  return minutes + ":" + String(rest).padStart(2, "0");
-}
-
-function formatListeners(value) {
-  const num = Number(value || 0);
-  if (!isFinite(num) || num <= 0) { return ""; }
-  if (num >= 1000000) { return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M"; }
-  if (num >= 1000) { return Math.round(num / 1000) + "K"; }
-  return String(num);
-}
-
-function reactionKey(artist, track) {
-  return String(artist || "").trim().toLowerCase() + "|||" + String(track || "").trim().toLowerCase();
-}
-
-function updateRangeFill(input) {
-  if (!input) { return; }
-  const min = Number(input.min || 0);
-  const max = Number(input.max || 0);
-  const val = Number(input.value || 0);
-  let pct = 0;
-  if (max > min) { pct = ((val - min) / (max - min)) * 100; }
+/* ===== ПОЛЗУНКИ: CSS variable вместо background на input ===== */
+function setRangeFill(input) {
+  if (!input) return;
+  const min = Number(input.min || 0), max = Number(input.max || 0), val = Number(input.value || 0);
+  let pct = max > min ? ((val - min) / (max - min)) * 100 : 0;
   pct = Math.max(0, Math.min(100, pct));
-  input.style.background =
-    "linear-gradient(to right, var(--accent) 0%, var(--accent) " +
-    pct + "%, var(--track-bg) " + pct + "%, var(--track-bg) 100%)";
+  input.style.setProperty("--fill-pct", pct + "%");
 }
 
 function modeTitle(mode) {
@@ -929,413 +410,228 @@ function modeTitle(mode) {
   if (mode === "global") return "🌍 глобальная волна";
   return "🎶 волна по треку";
 }
-
 function updateModeLabel() {
   let text = "🎵 Волна QuasWave — нажми, чтобы сменить";
-  if (state.mode === "likes") {
-    text = "❤️ Волна по лайкам";
-  } else if (state.mode === "likes_playlist") {
-    text = "❤️ Плейлист из лайков";
-  } else if (state.mode === "artist") {
-    text = "🎤 Волна по исполнителю: " + (state.seedArtist || state.artist || "");
-  } else if (state.mode === "global") {
-    text = "🌍 Глобальная волна" + (state.globalUseLikes ? " + мои лайки" : "");
-  } else if (state.mode === "track") {
-    text = "🎶 Волна по треку: " + (state.seedArtist || state.artist || "") + " — " + (state.seedTrack || state.title || "");
-  } else if (state.artist && state.title) {
-    text = "🎶 Волна по треку: " + state.artist + " — " + state.title;
-  }
+  if (state.mode === "likes") text = "❤️ Волна по лайкам";
+  else if (state.mode === "likes_playlist") text = "❤️ Плейлист из лайков";
+  else if (state.mode === "artist") text = "🎤 Волна по исполнителю: " + (state.seedArtist || state.artist || "");
+  else if (state.mode === "global") text = "🌍 Глобальная волна" + (state.globalUseLikes ? " + мои лайки" : "");
+  else if (state.mode === "track") text = "🎶 Волна по треку: " + (state.seedArtist || state.artist || "") + " — " + (state.seedTrack || state.title || "");
+  else if (state.artist && state.title) text = "🎶 Волна по треку: " + state.artist + " — " + state.title;
   modeLabelText.textContent = text;
 }
-
 function updateTrackInfo() {
   trackTitle.textContent = state.title || "Готов слушать?";
   trackArtist.textContent = state.artist || "QuasWave";
-  if (state.artist && state.title) {
-    document.title = state.artist + " - " + state.title + " | QuasWave";
-  } else {
-    document.title = "QuasWave Player";
-  }
-  updateModeLabel();
-  updateDownloadBtn();
+  document.title = (state.artist && state.title) ? state.artist + " - " + state.title + " | QuasWave" : "QuasWave Player";
+  updateModeLabel(); updateDownloadBtn();
 }
-
 function updateCover() {
-  if (state.coverUrl) {
-    coverImg.src = state.coverUrl;
-    coverImg.style.display = "block";
-    coverPlaceholder.style.display = "none";
-  } else {
-    coverImg.removeAttribute("src");
-    coverImg.style.display = "none";
-    coverPlaceholder.style.display = "block";
-  }
+  if (state.coverUrl) { coverImg.src = state.coverUrl; coverImg.style.display = "block"; coverPlaceholder.style.display = "none"; }
+  else { coverImg.removeAttribute("src"); coverImg.style.display = "none"; coverPlaceholder.style.display = "block"; }
 }
-
 function updateLikeBtn() { likeBtn.classList.toggle("liked", !!state.liked); }
 function updateDownloadBtn() { downloadBtn.disabled = !(state.artist && state.title); }
-
 function updatePlayIcon() {
   const playing = !audio.paused;
   playBtn.textContent = playing ? "⏸" : "▶";
   playBtn.classList.toggle("is-playing", playing);
   cover.classList.toggle("playing", playing);
 }
-
 function updateVolumeIcon() {
-  if (audio.muted || audio.volume <= 0.001) { muteBtn.textContent = "🔇"; }
-  else if (audio.volume < 0.5) { muteBtn.textContent = "🔉"; }
-  else { muteBtn.textContent = "🔊"; }
-  updateRangeFill(volumeInput);
+  if (audio.muted || audio.volume <= 0.001) muteBtn.textContent = "🔇";
+  else if (audio.volume < 0.5) muteBtn.textContent = "🔉";
+  else muteBtn.textContent = "🔊";
+  setRangeFill(volumeInput);
 }
-
 function updatePrevBtn() { prevBtn.disabled = playHistory.length === 0; }
-
 function snapshotCurrent() {
-  if (!state.artist || !state.title || !state.fileUrl) { return null; }
-  return {
-    artist: state.artist, title: state.title, file_url: state.fileUrl,
-    coverUrl: state.coverUrl, mode: state.mode,
-    seedArtist: state.seedArtist, seedTrack: state.seedTrack, liked: state.liked
-  };
+  if (!state.artist || !state.title || !state.fileUrl) return null;
+  return { artist: state.artist, title: state.title, file_url: state.fileUrl, coverUrl: state.coverUrl, mode: state.mode, seedArtist: state.seedArtist, seedTrack: state.seedTrack, liked: state.liked };
 }
-
 function pushHistory(snap) {
-  if (!snap) { return; }
+  if (!snap) return;
   const top = playHistory[playHistory.length - 1];
-  if (top && reactionKey(top.artist, top.title) === reactionKey(snap.artist, snap.title) && top.file_url === snap.file_url) { return; }
+  if (top && reactionKey(top.artist, top.title) === reactionKey(snap.artist, snap.title) && top.file_url === snap.file_url) return;
   playHistory.push(snap);
-  if (playHistory.length > PLAY_HISTORY_MAX) { playHistory.shift(); }
+  if (playHistory.length > PLAY_HISTORY_MAX) playHistory.shift();
   updatePrevBtn();
 }
-
 function canShowPreviousWave() {
   const prev = state.previousWave;
-  if (!prev || !prev.mode) { return false; }
-  if (prev.mode === "track") { return !!(prev.seedArtist && prev.seedTrack); }
-  if (prev.mode === "artist") { return !!prev.seedArtist; }
+  if (!prev || !prev.mode) return false;
+  if (prev.mode === "track") return !!(prev.seedArtist && prev.seedTrack);
+  if (prev.mode === "artist") return !!prev.seedArtist;
   return true;
 }
-
 function updateModesPanel() {
   globalUseLikes.checked = !!state.globalUseLikes;
-  if (canShowPreviousWave()) {
-    previousWaveBtn.style.display = "block";
-    previousWaveBtn.textContent = "↩️ Вернуться: " + modeTitle(state.previousWave.mode);
-  } else {
-    previousWaveBtn.style.display = "none";
-  }
+  if (canShowPreviousWave()) { previousWaveBtn.style.display = "block"; previousWaveBtn.textContent = "↩️ Вернуться: " + modeTitle(state.previousWave.mode); }
+  else previousWaveBtn.style.display = "none";
 }
-
 function applyTrackData(data) {
-  if (!data) { return; }
+  if (!data) return;
   const oldSnap = applyingHistory ? null : snapshotCurrent();
   const incomingMode = data.mode || "";
   const newMode = incomingMode || state.mode;
-  const incomingSeedArtist = (data.seed_artist !== undefined && data.seed_artist !== null && data.seed_artist !== "")
-    ? data.seed_artist : state.seedArtist;
-  const incomingSeedTrack = (data.seed_track !== undefined && data.seed_track !== null && data.seed_track !== "")
-    ? data.seed_track : state.seedTrack;
+  const incomingSeedArtist = (data.seed_artist !== undefined && data.seed_artist !== null && data.seed_artist !== "") ? data.seed_artist : state.seedArtist;
+  const incomingSeedTrack = (data.seed_track !== undefined && data.seed_track !== null && data.seed_track !== "") ? data.seed_track : state.seedTrack;
   let shouldSavePrev = false;
-  if (state.mode && newMode && newMode !== state.mode) { shouldSavePrev = true; }
+  if (state.mode && newMode && newMode !== state.mode) shouldSavePrev = true;
   if (state.mode && newMode && newMode === state.mode && (newMode === "track" || newMode === "artist")) {
-    if (incomingSeedArtist && incomingSeedArtist !== state.seedArtist) { shouldSavePrev = true; }
-    if (newMode === "track" && incomingSeedTrack && incomingSeedTrack !== state.seedTrack) { shouldSavePrev = true; }
+    if (incomingSeedArtist && incomingSeedArtist !== state.seedArtist) shouldSavePrev = true;
+    if (newMode === "track" && incomingSeedTrack && incomingSeedTrack !== state.seedTrack) shouldSavePrev = true;
   }
-  if (shouldSavePrev) {
-    state.previousWave = {
-      mode: state.mode, seedArtist: state.seedArtist, seedTrack: state.seedTrack,
-      artist: state.artist, title: state.title
-    };
-  }
+  if (shouldSavePrev) state.previousWave = { mode: state.mode, seedArtist: state.seedArtist, seedTrack: state.seedTrack, artist: state.artist, title: state.title };
   const incomingKey = reactionKey(data.artist, data.title || data.track);
   const incomingUrl = data.file_url || "";
-  const changedTrack =
-    (data.artist && (data.title || data.track)) && oldSnap &&
-    (reactionKey(oldSnap.artist, oldSnap.title) !== incomingKey || oldSnap.file_url !== incomingUrl);
-  if (data.artist) { state.artist = data.artist; }
-  if (data.title) { state.title = data.title; }
-  if (data.file_url) { state.fileUrl = data.file_url; }
-  if (data.mode) { state.mode = data.mode; }
-  if (data.seed_artist !== undefined && data.seed_artist !== null && data.seed_artist !== "") { state.seedArtist = data.seed_artist; }
-  if (data.seed_track !== undefined && data.seed_track !== null && data.seed_track !== "") { state.seedTrack = data.seed_track; }
-  if (data.cover_url !== undefined) { state.coverUrl = data.cover_url || ""; }
-  if (data.liked !== undefined) { state.liked = !!data.liked; }
-  if (state.mode === "track") {
-    if (!state.seedArtist && state.artist) { state.seedArtist = state.artist; }
-    if (!state.seedTrack && state.title) { state.seedTrack = state.title; }
-  }
-  if (!applyingHistory && changedTrack) { pushHistory(oldSnap); }
-  updateTrackInfo();
-  updateCover();
-  updateLikeBtn();
-  updateModesPanel();
-  if (state.fileUrl) {
-    audio.src = state.fileUrl;
-    audio.load();
-    updateRangeFill(seek);
-  }
+  const changedTrack = (data.artist && (data.title || data.track)) && oldSnap && (reactionKey(oldSnap.artist, oldSnap.title) !== incomingKey || oldSnap.file_url !== incomingUrl);
+  if (data.artist) state.artist = data.artist;
+  if (data.title) state.title = data.title;
+  if (data.file_url) state.fileUrl = data.file_url;
+  if (data.mode) state.mode = data.mode;
+  if (data.seed_artist !== undefined && data.seed_artist !== null && data.seed_artist !== "") state.seedArtist = data.seed_artist;
+  if (data.seed_track !== undefined && data.seed_track !== null && data.seed_track !== "") state.seedTrack = data.seed_track;
+  if (data.cover_url !== undefined) state.coverUrl = data.cover_url || "";
+  if (data.liked !== undefined) state.liked = !!data.liked;
+  if (state.mode === "track") { if (!state.seedArtist && state.artist) state.seedArtist = state.artist; if (!state.seedTrack && state.title) state.seedTrack = state.title; }
+  if (!applyingHistory && changedTrack) pushHistory(oldSnap);
+  updateTrackInfo(); updateCover(); updateLikeBtn(); updateModesPanel();
+  if (state.fileUrl) { audio.src = state.fileUrl; audio.load(); setRangeFill(seek); }
 }
-
 async function apiFetch(path, options) {
   options = options || {};
-  if (!apiBase) { throw new Error("API base не задан. Открывай плеер кнопкой из бота."); }
-  if (!isAllowedApiBase(apiBase)) { throw new Error("API base is not allowed"); }
+  if (!apiBase) throw new Error("API base не задан. Открывай плеер кнопкой из бота.");
+  if (!isAllowedApiBase(apiBase)) throw new Error("API base is not allowed");
   const headers = Object.assign({}, options.headers || {});
-  if (tg && tg.initData) { headers["X-Telegram-Init-Data"] = tg.initData; }
-  else { console.warn("Telegram initData is missing"); }
+  if (tg && tg.initData) headers["X-Telegram-Init-Data"] = tg.initData;
+  else console.warn("Telegram initData is missing");
   const fetchOptions = { method: options.method || "GET", cache: "no-store", headers: headers };
-  if (options.json !== undefined) {
-    headers["Content-Type"] = "application/json";
-    fetchOptions.body = JSON.stringify(options.json);
-  }
-  const timeoutMs = options.timeout || (
-    path.indexOf("/api/start") !== -1 || path.indexOf("/api/next_track") !== -1 ? 95000 : 25000
-  );
+  if (options.json !== undefined) { headers["Content-Type"] = "application/json"; fetchOptions.body = JSON.stringify(options.json); }
+  const timeoutMs = options.timeout || (path.indexOf("/api/start") !== -1 || path.indexOf("/api/next_track") !== -1 ? 95000 : 25000);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   fetchOptions.signal = controller.signal;
-  const url = apiBase + path;
   try {
-    const response = await fetch(url, fetchOptions);
+    const response = await fetch(apiBase + path, fetchOptions);
     if (!response.ok) {
       let message = "HTTP " + response.status;
-      try {
-        const data = await response.json();
-        if (data && data.error) { message = data.error; }
-      } catch (e) { console.error("Cannot parse error response", e); }
+      try { const d = await response.json(); if (d && d.error) message = d.error; } catch (e) {}
       throw new Error(message);
     }
     return await response.json();
-  } catch (e) {
-    if (e && e.name === "AbortError") { throw new Error("Таймаут запроса"); }
-    throw e;
-  } finally { clearTimeout(timer); }
+  } catch (e) { if (e && e.name === "AbortError") throw new Error("Таймаут запроса"); throw e; }
+  finally { clearTimeout(timer); }
 }
-
-function withUser(path) {
-  const separator = path.includes("?") ? "&" : "?";
-  return path + separator + "user_id=" + encodeURIComponent(state.userId);
-}
-
+function withUser(path) { return path + (path.includes("?") ? "&" : "?") + "user_id=" + encodeURIComponent(state.userId); }
 function buildNextPath() {
-  const query = new URLSearchParams();
-  query.set("user_id", state.userId);
-  if (state.mode) { query.set("mode", state.mode); }
-  if (state.seedArtist) { query.set("artist", state.seedArtist); }
-  if (state.seedTrack) { query.set("track", state.seedTrack); }
-  return "/api/next_track?" + query.toString();
+  const q = new URLSearchParams(); q.set("user_id", state.userId);
+  if (state.mode) q.set("mode", state.mode);
+  if (state.seedArtist) q.set("artist", state.seedArtist);
+  if (state.seedTrack) q.set("track", state.seedTrack);
+  return "/api/next_track?" + q.toString();
 }
-
-async function playAudio() {
-  try { await audio.play(); }
-  catch (e) { console.error("Play failed", e); showToast("Не удалось воспроизвести"); }
-}
-
-async function ensureInitialAndPlay() {
-  setLoading(true);
-  try {
-    if (state.fileUrl) { updatePlayIcon(); await playAudio(); return; }
-    await requestNext(true);
-  } finally { setLoading(false); }
-}
-
+async function playAudio() { try { await audio.play(); } catch (e) { console.error("Play failed", e); showToast("Не удалось воспроизвести"); } }
+async function ensureInitialAndPlay() { setLoading(true); try { if (state.fileUrl) { updatePlayIcon(); await playAudio(); return; } await requestNext(true); } finally { setLoading(false); } }
 async function requestNext(autoplay) {
-  if (state.nextLoading) { return; }
-  state.nextLoading = true;
-  setLoading(true);
-  try {
-    const data = await apiFetch(buildNextPath());
-    applyTrackData(data);
-    audioErrorRetry = false;
-    if (autoplay) { await playAudio(); }
-  } catch (e) {
-    console.error("Next track failed", e);
-    showToast(e.message || "Ошибка загрузки");
-  } finally {
-    state.nextLoading = false;
-    setLoading(false);
-    updatePlayIcon();
-  }
+  if (state.nextLoading) return;
+  state.nextLoading = true; setLoading(true);
+  try { const data = await apiFetch(buildNextPath()); applyTrackData(data); audioErrorRetry = false; if (autoplay) await playAudio(); }
+  catch (e) { console.error("Next track failed", e); showToast(e.message || "Ошибка загрузки"); }
+  finally { state.nextLoading = false; setLoading(false); updatePlayIcon(); }
 }
-
 async function startTrack(artist, track, autoplay) {
   setLoading(true);
-  try {
-    const data = await apiFetch(withUser("/api/start_track"), { method: "POST", json: { artist: artist, track: track } });
-    applyTrackData(data);
-    audioErrorRetry = false;
-    if (autoplay) { await playAudio(); }
-  } catch (e) {
-    console.error("Start track failed", e);
-    showToast(e.message || "Не удалось запустить трек");
-  } finally { setLoading(false); updatePlayIcon(); }
+  try { const data = await apiFetch(withUser("/api/start_track"), { method: "POST", json: { artist, track } }); applyTrackData(data); audioErrorRetry = false; if (autoplay) await playAudio(); }
+  catch (e) { console.error("Start track failed", e); showToast(e.message || "Не удалось запустить трек"); }
+  finally { setLoading(false); updatePlayIcon(); }
 }
-
 async function startLikedPlaylist(artist, track, autoplay) {
   setLoading(true);
-  try {
-    const data = await apiFetch(withUser("/api/start_liked_playlist"), { method: "POST", json: { artist: artist || "", track: track || "" } });
-    applyTrackData(data);
-    audioErrorRetry = false;
-    if (autoplay) { await playAudio(); }
-  } catch (e) {
-    console.error("Start liked playlist failed", e);
-    showToast(e.message || "Не удалось запустить плейлист из лайков");
-  } finally { setLoading(false); updatePlayIcon(); }
+  try { const data = await apiFetch(withUser("/api/start_liked_playlist"), { method: "POST", json: { artist: artist || "", track: track || "" } }); applyTrackData(data); audioErrorRetry = false; if (autoplay) await playAudio(); }
+  catch (e) { console.error("Start liked playlist failed", e); showToast(e.message || "Не удалось запустить плейлист из лайков"); }
+  finally { setLoading(false); updatePlayIcon(); }
 }
-
 async function startArtist(artist) {
   setLoading(true);
-  try {
-    const data = await apiFetch(withUser("/api/start_artist"), { method: "POST", json: { artist: artist } });
-    applyTrackData(data);
-    audioErrorRetry = false;
-    await playAudio();
-  } catch (e) {
-    console.error("Start artist failed", e);
-    showToast(e.message || "Не удалось запустить волну по исполнителю");
-  } finally { setLoading(false); updatePlayIcon(); }
+  try { const data = await apiFetch(withUser("/api/start_artist"), { method: "POST", json: { artist } }); applyTrackData(data); audioErrorRetry = false; await playAudio(); }
+  catch (e) { console.error("Start artist failed", e); showToast(e.message || "Не удалось запустить волну по исполнителю"); }
+  finally { setLoading(false); updatePlayIcon(); }
 }
-
 async function startLikesWave() {
   setLoading(true);
-  try {
-    const data = await apiFetch(withUser("/api/start_likes_wave"), { method: "POST", json: {} });
-    applyTrackData(data);
-    audioErrorRetry = false;
-    await playAudio();
-  } catch (e) {
-    console.error("Start likes wave failed", e);
-    showToast(e.message || "Не удалось запустить волну по лайкам");
-  } finally { setLoading(false); updatePlayIcon(); }
+  try { const data = await apiFetch(withUser("/api/start_likes_wave"), { method: "POST", json: {} }); applyTrackData(data); audioErrorRetry = false; await playAudio(); }
+  catch (e) { console.error("Start likes wave failed", e); showToast(e.message || "Не удалось запустить волну по лайкам"); }
+  finally { setLoading(false); updatePlayIcon(); }
 }
-
 async function startGlobalWave() {
   setLoading(true);
-  try {
-    const data = await apiFetch(withUser("/api/start_global_wave"), { method: "POST", json: {} });
-    applyTrackData(data);
-    audioErrorRetry = false;
-    await playAudio();
-  } catch (e) {
-    console.error("Start global wave failed", e);
-    showToast(e.message || "Не удалось запустить глобальную волну");
-  } finally { setLoading(false); updatePlayIcon(); }
+  try { const data = await apiFetch(withUser("/api/start_global_wave"), { method: "POST", json: {} }); applyTrackData(data); audioErrorRetry = false; await playAudio(); }
+  catch (e) { console.error("Start global wave failed", e); showToast(e.message || "Не удалось запустить глобальную волну"); }
+  finally { setLoading(false); updatePlayIcon(); }
 }
-
 async function startPreviousWave() {
   const prev = state.previousWave;
   if (!prev || !canShowPreviousWave()) { showToast("Нет предыдущей волны"); return; }
   closeModes();
-  if (prev.mode === "track") { await startTrack(prev.seedArtist, prev.seedTrack, true); }
-  else if (prev.mode === "artist") { await startArtist(prev.seedArtist); }
-  else if (prev.mode === "likes") { await startLikesWave(); }
-  else if (prev.mode === "likes_playlist") { await startLikedPlaylist(prev.seedArtist || "", prev.seedTrack || "", true); }
-  else if (prev.mode === "global") { await startGlobalWave(); }
-  else { showToast("Не знаю, куда возвращать"); }
+  if (prev.mode === "track") await startTrack(prev.seedArtist, prev.seedTrack, true);
+  else if (prev.mode === "artist") await startArtist(prev.seedArtist);
+  else if (prev.mode === "likes") await startLikesWave();
+  else if (prev.mode === "likes_playlist") await startLikedPlaylist(prev.seedArtist || "", prev.seedTrack || "", true);
+  else if (prev.mode === "global") await startGlobalWave();
+  else showToast("Не знаю, куда возвращать");
 }
-
 function playFromHistory() {
-  if (!playHistory.length) { return; }
-  const prev = playHistory.pop();
-  updatePrevBtn();
-  haptic("medium");
+  if (!playHistory.length) return;
+  const prev = playHistory.pop(); updatePrevBtn(); haptic("medium");
   applyingHistory = true;
-  applyTrackData({
-    artist: prev.artist, title: prev.title, file_url: prev.file_url,
-    cover_url: prev.coverUrl, mode: prev.mode,
-    seed_artist: prev.seedArtist, seed_track: prev.seedTrack, liked: prev.liked
-  });
-  applyingHistory = false;
-  audioErrorRetry = false;
-  playAudio();
+  applyTrackData({ artist: prev.artist, title: prev.title, file_url: prev.file_url, cover_url: prev.coverUrl, mode: prev.mode, seed_artist: prev.seedArtist, seed_track: prev.seedTrack, liked: prev.liked });
+  applyingHistory = false; audioErrorRetry = false; playAudio();
 }
-
 async function likeCurrent() {
   if (!state.artist || !state.title) { showToast("Сначала запусти трек"); return; }
   if (state.liked) { await unlikeCurrent(); return; }
   try {
     await apiFetch(withUser("/api/like"), { method: "POST", json: { artist: state.artist, track: state.title } });
-    state.liked = true;
-    updateLikeBtn();
-    haptic("medium");
-    showToast("Лайк сохранён");
-    state.likesLoaded = false;
-    if (likesPanel.classList.contains("open")) { loadLikes(true); }
+    state.liked = true; updateLikeBtn(); haptic("medium"); showToast("Лайк сохранён");
+    state.likesLoaded = false; if (likesPanel.classList.contains("open")) loadLikes(true);
   } catch (e) { console.error("Like failed", e); showToast(e.message || "Ошибка лайка"); }
 }
-
 async function unlikeCurrent() {
-  if (!state.artist || !state.title) { return; }
+  if (!state.artist || !state.title) return;
   try {
     await apiFetch(withUser("/api/unlike"), { method: "POST", json: { artist: state.artist, track: state.title } });
-    state.liked = false;
-    updateLikeBtn();
-    haptic("heavy");
-    showToast("Убрано из лайков");
-    state.likesLoaded = false;
-    if (likesPanel.classList.contains("open")) { loadLikes(true); }
+    state.liked = false; updateLikeBtn(); haptic("heavy"); showToast("Убрано из лайков");
+    state.likesLoaded = false; if (likesPanel.classList.contains("open")) loadLikes(true);
   } catch (e) { console.error("Unlike current failed", e); showToast(e.message || "Не удалось удалить лайк"); }
 }
-
 async function unlikeItem(artist, track, rowEl) {
   try {
-    await apiFetch(withUser("/api/unlike"), { method: "POST", json: { artist: artist, track: track } });
+    await apiFetch(withUser("/api/unlike"), { method: "POST", json: { artist, track } });
     haptic("heavy");
-    if (rowEl && rowEl.parentNode) {
-      rowEl.classList.add("removing");
-      const node = rowEl;
-      setTimeout(() => { if (node.parentNode) { node.parentNode.removeChild(node); } }, 220);
-    }
-    if (reactionKey(state.artist, state.title) === reactionKey(artist, track)) {
-      state.liked = false;
-      updateLikeBtn();
-    }
-    state.likesLoaded = false;
-    showToast("Убрано из лайков");
+    if (rowEl && rowEl.parentNode) { rowEl.classList.add("removing"); const node = rowEl; setTimeout(() => { if (node.parentNode) node.parentNode.removeChild(node); }, 220); }
+    if (reactionKey(state.artist, state.title) === reactionKey(artist, track)) { state.liked = false; updateLikeBtn(); }
+    state.likesLoaded = false; showToast("Убрано из лайков");
   } catch (e) { console.error("Unlike failed", e); showToast(e.message || "Не удалось удалить лайк"); }
 }
-
 async function dislikeCurrent() {
   if (!state.artist || !state.title) { await requestNext(true); return; }
   setLoading(true);
   try {
     await apiFetch(withUser("/api/dislike"), { method: "POST", json: { artist: state.artist, track: state.title } });
-    state.liked = false;
-    updateLikeBtn();
-    haptic("heavy");
-    showToast("Дизлайк учтён");
-    state.likesLoaded = false;
+    state.liked = false; updateLikeBtn(); haptic("heavy"); showToast("Дизлайк учтён"); state.likesLoaded = false;
     await requestNext(true);
-  } catch (e) {
-    console.error("Dislike failed", e);
-    showToast(e.message || "Ошибка дизлайка");
-    setLoading(false);
-  }
+  } catch (e) { console.error("Dislike failed", e); showToast(e.message || "Ошибка дизлайка"); setLoading(false); }
 }
-
 async function sendTrackToTg() {
   if (!state.artist || !state.title) { showToast("Сначала запусти трек"); return; }
-  haptic("medium");
-  setLoading(true);
-  downloadBtn.disabled = true;
-  try {
-    await apiFetch(withUser("/api/send_track"), { method: "POST", json: { artist: state.artist, track: state.title } });
-    haptic("light");
-    showToast("📥 Отправил трек в Telegram — проверь бота");
-  } catch (e) {
-    console.error("Send track failed", e);
-    showToast(e.message || "Не удалось отправить трек");
-  } finally { setLoading(false); updateDownloadBtn(); }
+  haptic("medium"); setLoading(true); downloadBtn.disabled = true;
+  try { await apiFetch(withUser("/api/send_track"), { method: "POST", json: { artist: state.artist, track: state.title } }); haptic("light"); showToast("📥 Отправил трек в Telegram — проверь бота"); }
+  catch (e) { console.error("Send track failed", e); showToast(e.message || "Не удалось отправить трек"); }
+  finally { setLoading(false); updateDownloadBtn(); }
 }
 
-playBtn.addEventListener("click", async () => {
-  haptic("light");
-  if (!audio.src) { await ensureInitialAndPlay(); return; }
-  if (audio.paused) { await playAudio(); } else { audio.pause(); }
-  updatePlayIcon();
-});
+playBtn.addEventListener("click", async () => { haptic("light"); if (!audio.src) { await ensureInitialAndPlay(); return; } if (audio.paused) await playAudio(); else audio.pause(); updatePlayIcon(); });
 prevBtn.addEventListener("click", playFromHistory);
 nextBtn.addEventListener("click", () => { haptic("light"); requestNext(true); });
 likeBtn.addEventListener("click", likeCurrent);
@@ -1343,13 +639,13 @@ dislikeBtn.addEventListener("click", dislikeCurrent);
 downloadBtn.addEventListener("click", sendTrackToTg);
 muteBtn.addEventListener("click", () => {
   audio.muted = !audio.muted;
-  if (!audio.muted && audio.volume <= 0.001) { audio.volume = 0.7; volumeInput.value = "0.7"; }
-  updateVolumeIcon();
-  haptic("light");
+  if (!audio.muted && audio.volume <= 0.001) { audio.volume = 0.7; volumeInput.value = "0.7"; saveVolume(0.7); }
+  updateVolumeIcon(); haptic("light");
 });
 volumeInput.addEventListener("input", () => {
   audio.volume = Number(volumeInput.value || 0);
   audio.muted = false;
+  saveVolume(audio.volume);
   updateVolumeIcon();
 });
 audio.addEventListener("play", () => { audioErrorRetry = false; updatePlayIcon(); });
@@ -1361,25 +657,14 @@ audio.addEventListener("timeupdate", () => {
     seek.value = Math.floor(audio.currentTime);
     currentTime.textContent = formatTime(audio.currentTime);
     duration.textContent = formatTime(audio.duration);
-    updateRangeFill(seek);
+    setRangeFill(seek);
   }
 });
-audio.addEventListener("loadedmetadata", () => {
-  if (isFinite(audio.duration)) {
-    seek.max = Math.floor(audio.duration);
-    duration.textContent = formatTime(audio.duration);
-    updateRangeFill(seek);
-  }
-});
-audio.addEventListener("ended", () => { requestNext(true); });
+audio.addEventListener("loadedmetadata", () => { if (isFinite(audio.duration)) { seek.max = Math.floor(audio.duration); duration.textContent = formatTime(audio.duration); setRangeFill(seek); } });
+audio.addEventListener("ended", () => requestNext(true));
 audio.addEventListener("error", () => {
   if (audio.src) {
-    if (!audioErrorRetry) {
-      audioErrorRetry = true;
-      showToast("Ошибка аудио, пробую следующий трек...");
-      requestNext(true);
-      return;
-    }
+    if (!audioErrorRetry) { audioErrorRetry = true; showToast("Ошибка аудио, пробую следующий трек..."); requestNext(true); return; }
     showToast("Ошибка аудио. Попробуй следующий трек или ⏮ назад.");
   }
   updatePlayIcon();
@@ -1389,71 +674,20 @@ seek.addEventListener("input", () => {
   if (isFinite(audio.duration) && audio.duration > 0 && seek.max) {
     audio.currentTime = (Number(seek.value) / Number(seek.max)) * audio.duration;
     currentTime.textContent = formatTime(audio.currentTime);
-    updateRangeFill(seek);
+    setRangeFill(seek);
   }
 });
 
-function openLikes() {
-  closeModes(); closeSearch(); closeArtistSearch();
-  likesPanel.classList.add("open");
-  backdrop.classList.add("show");
-  likesUser.textContent = "user_id: " + state.userId;
-  if (!state.likesLoaded) { loadLikes(true); }
-}
-function closeLikes() {
-  likesPanel.classList.remove("open");
-  if (!modesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !artistPanel.classList.contains("open")) {
-    backdrop.classList.remove("show");
-  }
-}
-function openModes() {
-  closeLikes(); closeSearch(); closeArtistSearch();
-  updateModesPanel();
-  modesPanel.classList.add("open");
-  backdrop.classList.add("show");
-  modeLabel.classList.add("panel-open");
-}
-function closeModes() {
-  modesPanel.classList.remove("open");
-  modeLabel.classList.remove("panel-open");
-  if (!likesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !artistPanel.classList.contains("open")) {
-    backdrop.classList.remove("show");
-  }
-}
-function openSearch() {
-  closeModes(); closeLikes(); closeArtistSearch();
-  searchPanel.classList.add("open");
-  backdrop.classList.add("show");
-  searchResults.innerHTML = "";
-  searchTrackInput.value = "";
-  searchArtistInput.value = "";
-  setTimeout(() => { try { searchTrackInput.focus(); } catch (e) {} }, 260);
-}
-function closeSearch() {
-  searchPanel.classList.remove("open");
-  if (!likesPanel.classList.contains("open") && !modesPanel.classList.contains("open") && !artistPanel.classList.contains("open")) {
-    backdrop.classList.remove("show");
-  }
-}
-function openArtistSearch() {
-  closeModes(); closeLikes(); closeSearch();
-  artistPanel.classList.add("open");
-  backdrop.classList.add("show");
-  artistSearchResults.innerHTML = "";
-  artistSearchInput.value = "";
-  setTimeout(() => { try { artistSearchInput.focus(); } catch (e) {} }, 260);
-}
-function closeArtistSearch() {
-  artistPanel.classList.remove("open");
-  if (!likesPanel.classList.contains("open") && !modesPanel.classList.contains("open") && !searchPanel.classList.contains("open")) {
-    backdrop.classList.remove("show");
-  }
-}
+function openLikes() { closeModes(); closeSearch(); closeArtistSearch(); likesPanel.classList.add("open"); backdrop.classList.add("show"); likesUser.textContent = "user_id: " + state.userId; if (!state.likesLoaded) loadLikes(true); }
+function closeLikes() { likesPanel.classList.remove("open"); if (!modesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !artistPanel.classList.contains("open")) backdrop.classList.remove("show"); }
+function openModes() { closeLikes(); closeSearch(); closeArtistSearch(); updateModesPanel(); modesPanel.classList.add("open"); backdrop.classList.add("show"); modeLabel.classList.add("panel-open"); }
+function closeModes() { modesPanel.classList.remove("open"); modeLabel.classList.remove("panel-open"); if (!likesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !artistPanel.classList.contains("open")) backdrop.classList.remove("show"); }
+function openSearch() { closeModes(); closeLikes(); closeArtistSearch(); searchPanel.classList.add("open"); backdrop.classList.add("show"); searchResults.innerHTML = ""; searchTrackInput.value = ""; searchArtistInput.value = ""; setTimeout(() => { try { searchTrackInput.focus(); } catch (e) {} }, 260); }
+function closeSearch() { searchPanel.classList.remove("open"); if (!likesPanel.classList.contains("open") && !modesPanel.classList.contains("open") && !artistPanel.classList.contains("open")) backdrop.classList.remove("show"); }
+function openArtistSearch() { closeModes(); closeLikes(); closeSearch(); artistPanel.classList.add("open"); backdrop.classList.add("show"); artistSearchResults.innerHTML = ""; artistSearchInput.value = ""; setTimeout(() => { try { artistSearchInput.focus(); } catch (e) {} }, 260); }
+function closeArtistSearch() { artistPanel.classList.remove("open"); if (!likesPanel.classList.contains("open") && !modesPanel.classList.contains("open") && !searchPanel.classList.contains("open")) backdrop.classList.remove("show"); }
 
-modeLabel.addEventListener("click", () => {
-  haptic("light");
-  if (modesPanel.classList.contains("open")) { closeModes(); } else { openModes(); }
-});
+modeLabel.addEventListener("click", () => { haptic("light"); if (modesPanel.classList.contains("open")) closeModes(); else openModes(); });
 openLikesBtn.addEventListener("click", openLikes);
 closeLikesBtn.addEventListener("click", closeLikes);
 backdrop.addEventListener("click", () => { closeLikes(); closeModes(); closeSearch(); closeArtistSearch(); });
@@ -1461,242 +695,124 @@ closeModesBtn.addEventListener("click", closeModes);
 closeSearchBtn.addEventListener("click", closeSearch);
 closeArtistBtn.addEventListener("click", closeArtistSearch);
 previousWaveBtn.addEventListener("click", startPreviousWave);
-modeTrackBtn.addEventListener("click", () => { openSearch(); });
-modeArtistBtn.addEventListener("click", () => { openArtistSearch(); });
+modeTrackBtn.addEventListener("click", () => openSearch());
+modeArtistBtn.addEventListener("click", () => openArtistSearch());
 
 async function runTrackSearch() {
   const query = (searchTrackInput.value || "").trim();
   const artist = (searchArtistInput.value || "").trim();
   if (!query) { showToast("Введи название трека"); searchTrackInput.focus(); return; }
-  if (state.searching) { return; }
-  state.searching = true;
-  searchGoBtn.disabled = true;
-  searchGoBtn.textContent = "Ищу...";
-  searchResults.innerHTML = "";
+  if (state.searching) return;
+  state.searching = true; searchGoBtn.disabled = true; searchGoBtn.textContent = "Ищу..."; searchResults.innerHTML = "";
   try {
-    const data = await apiFetch(withUser("/api/search_tracks"), { method: "POST", json: { query: query, artist: artist } });
+    const data = await apiFetch(withUser("/api/search_tracks"), { method: "POST", json: { query, artist } });
     const items = data.items || [];
     searchResults.innerHTML = "";
-    if (!items.length) {
-      const empty = document.createElement("div");
-      empty.className = "search-empty";
-      empty.textContent = "Ничего не нашёл. Попробуй другое название или укажи исполнителя.";
-      searchResults.appendChild(empty);
-      return;
-    }
-    if (items.length === 1) {
-      const chosen = items[0];
-      closeSearch();
-      startTrack(chosen.artist, chosen.track, true);
-      return;
-    }
-    items.forEach((item) => {
-      const row = document.createElement("button");
-      row.type = "button";
-      row.className = "search-item";
-      const title = document.createElement("span");
-      title.textContent = item.track;
-      const sub = document.createElement("span");
-      sub.className = "search-item-artist";
+    if (!items.length) { const e = document.createElement("div"); e.className = "search-empty"; e.textContent = "Ничего не нашёл. Попробуй другое название или укажи исполнителя."; searchResults.appendChild(e); return; }
+    if (items.length === 1) { closeSearch(); startTrack(items[0].artist, items[0].track, true); return; }
+    items.forEach(item => {
+      const row = document.createElement("button"); row.type = "button"; row.className = "search-item";
+      const title = document.createElement("span"); title.textContent = item.track;
+      const sub = document.createElement("span"); sub.className = "search-item-artist";
       const listeners = formatListeners(item.listeners);
       sub.textContent = item.artist + (listeners ? " • " + listeners : "");
-      row.appendChild(title);
-      row.appendChild(sub);
+      row.appendChild(title); row.appendChild(sub);
       row.addEventListener("click", () => { haptic("light"); closeSearch(); startTrack(item.artist, item.track, true); });
       searchResults.appendChild(row);
     });
-  } catch (e) {
-    console.error("Track search failed", e);
-    searchResults.innerHTML = "";
-    const empty = document.createElement("div");
-    empty.className = "search-empty";
-    empty.textContent = e.message || "Ошибка поиска";
-    searchResults.appendChild(empty);
-  } finally {
-    state.searching = false;
-    searchGoBtn.disabled = false;
-    searchGoBtn.textContent = "Искать";
-  }
+  } catch (e) { console.error("Track search failed", e); searchResults.innerHTML = ""; const em = document.createElement("div"); em.className = "search-empty"; em.textContent = e.message || "Ошибка поиска"; searchResults.appendChild(em); }
+  finally { state.searching = false; searchGoBtn.disabled = false; searchGoBtn.textContent = "Искать"; }
 }
-
 async function runArtistSearch() {
   const query = (artistSearchInput.value || "").trim();
   if (!query) { showToast("Введи исполнителя"); artistSearchInput.focus(); return; }
-  if (state.artistSearching) { return; }
-  state.artistSearching = true;
-  artistSearchGoBtn.disabled = true;
-  artistSearchGoBtn.textContent = "Ищу...";
-  artistSearchResults.innerHTML = "";
+  if (state.artistSearching) return;
+  state.artistSearching = true; artistSearchGoBtn.disabled = true; artistSearchGoBtn.textContent = "Ищу..."; artistSearchResults.innerHTML = "";
   try {
-    const data = await apiFetch(withUser("/api/search_artists"), { method: "POST", json: { query: query } });
+    const data = await apiFetch(withUser("/api/search_artists"), { method: "POST", json: { query } });
     const items = data.items || [];
     artistSearchResults.innerHTML = "";
-    if (!items.length) {
-      const empty = document.createElement("div");
-      empty.className = "search-empty";
-      empty.textContent = "Ничего не нашёл. Попробуй другое название исполнителя.";
-      artistSearchResults.appendChild(empty);
-      return;
-    }
-    if (items.length === 1) {
-      const chosen = items[0];
-      closeArtistSearch();
-      startArtist(chosen.artist);
-      return;
-    }
-    items.forEach((item) => {
-      const row = document.createElement("button");
-      row.type = "button";
-      row.className = "search-item";
-      const title = document.createElement("span");
-      title.textContent = item.artist;
-      const sub = document.createElement("span");
-      sub.className = "search-item-artist";
+    if (!items.length) { const e = document.createElement("div"); e.className = "search-empty"; e.textContent = "Ничего не нашёл. Попробуй другое название исполнителя."; artistSearchResults.appendChild(e); return; }
+    if (items.length === 1) { closeArtistSearch(); startArtist(items[0].artist); return; }
+    items.forEach(item => {
+      const row = document.createElement("button"); row.type = "button"; row.className = "search-item";
+      const title = document.createElement("span"); title.textContent = item.artist;
+      const sub = document.createElement("span"); sub.className = "search-item-artist";
       const listeners = formatListeners(item.listeners);
       sub.textContent = listeners ? ("Слушатели: " + listeners) : "Last.fm artist";
-      row.appendChild(title);
-      row.appendChild(sub);
+      row.appendChild(title); row.appendChild(sub);
       row.addEventListener("click", () => { haptic("light"); closeArtistSearch(); startArtist(item.artist); });
       artistSearchResults.appendChild(row);
     });
-  } catch (e) {
-    console.error("Artist search failed", e);
-    artistSearchResults.innerHTML = "";
-    const empty = document.createElement("div");
-    empty.className = "search-empty";
-    empty.textContent = e.message || "Ошибка поиска";
-    artistSearchResults.appendChild(empty);
-  } finally {
-    state.artistSearching = false;
-    artistSearchGoBtn.disabled = false;
-    artistSearchGoBtn.textContent = "Искать";
-  }
+  } catch (e) { console.error("Artist search failed", e); artistSearchResults.innerHTML = ""; const em = document.createElement("div"); em.className = "search-empty"; em.textContent = e.message || "Ошибка поиска"; artistSearchResults.appendChild(em); }
+  finally { state.artistSearching = false; artistSearchGoBtn.disabled = false; artistSearchGoBtn.textContent = "Искать"; }
 }
-
 searchGoBtn.addEventListener("click", runTrackSearch);
 artistSearchGoBtn.addEventListener("click", runArtistSearch);
-searchTrackInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); runTrackSearch(); } });
-searchArtistInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); runTrackSearch(); } });
-artistSearchInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); runArtistSearch(); } });
-
+searchTrackInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); runTrackSearch(); } });
+searchArtistInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); runTrackSearch(); } });
+artistSearchInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); runArtistSearch(); } });
 modeLikesBtn.addEventListener("click", () => { closeModes(); startLikesWave(); });
 modePlaylistBtn.addEventListener("click", () => { closeModes(); startLikedPlaylist("", "", true); });
 modeGlobalBtn.addEventListener("click", () => { closeModes(); startGlobalWave(); });
-
 globalUseLikes.addEventListener("change", async () => {
   const checked = !!globalUseLikes.checked;
   try {
     await apiFetch(withUser("/api/settings"), { method: "POST", json: { global_use_likes: checked } });
-    state.globalUseLikes = checked;
-    updateModeLabel();
-    updateModesPanel();
+    state.globalUseLikes = checked; updateModeLabel(); updateModesPanel();
     showToast(checked ? "Глобальная волна будет учитывать твои лайки" : "Глобальная волна без твоих лайков");
-  } catch (e) {
-    console.error("Settings failed", e);
-    showToast(e.message || "Не удалось сохранить настройку");
-    globalUseLikes.checked = state.globalUseLikes;
-  }
+  } catch (e) { console.error("Settings failed", e); showToast(e.message || "Не удалось сохранить настройку"); globalUseLikes.checked = state.globalUseLikes; }
 });
-
 async function loadLikes(reset) {
-  if (state.likesLoading) { return; }
-  if (reset) {
-    state.likesPage = 1;
-    state.likesPages = 1;
-    state.likesLoaded = false;
-    likesList.innerHTML = "";
-  }
-  if (state.likesLoaded && state.likesPage > state.likesPages) { return; }
+  if (state.likesLoading) return;
+  if (reset) { state.likesPage = 1; state.likesPages = 1; state.likesLoaded = false; likesList.innerHTML = ""; }
+  if (state.likesLoaded && state.likesPage > state.likesPages) return;
   state.likesLoading = true;
   try {
     const data = await apiFetch(withUser("/api/likes?page=" + encodeURIComponent(state.likesPage) + "&page_size=15"));
-    if (reset) { likesList.innerHTML = ""; }
-    state.likesPage = data.page;
-    state.likesPages = data.pages;
+    if (reset) likesList.innerHTML = "";
+    state.likesPage = data.page; state.likesPages = data.pages;
     likesUser.textContent = "user_id: " + data.user_id + " • всего " + data.total;
-    (data.items || []).forEach((item) => {
-      const row = document.createElement("div");
-      row.className = "like-item";
-      const text = document.createElement("div");
-      text.className = "like-item-text";
-      text.textContent = item.artist + " — " + item.track;
-      const del = document.createElement("button");
-      del.type = "button";
-      del.className = "like-del";
-      del.textContent = "🗑";
-      del.title = "Удалить из лайков";
+    (data.items || []).forEach(item => {
+      const row = document.createElement("div"); row.className = "like-item";
+      const text = document.createElement("div"); text.className = "like-item-text"; text.textContent = item.artist + " — " + item.track;
+      const del = document.createElement("button"); del.type = "button"; del.className = "like-del"; del.textContent = "🗑"; del.title = "Удалить из лайков";
       text.addEventListener("click", () => { haptic("light"); closeLikes(); startLikedPlaylist(item.artist, item.track, true); });
-      del.addEventListener("click", (ev) => { ev.stopPropagation(); unlikeItem(item.artist, item.track, row); });
-      row.appendChild(text);
-      row.appendChild(del);
-      likesList.appendChild(row);
+      del.addEventListener("click", ev => { ev.stopPropagation(); unlikeItem(item.artist, item.track, row); });
+      row.appendChild(text); row.appendChild(del); likesList.appendChild(row);
     });
-    if (state.likesPage >= state.likesPages) { state.likesLoaded = true; }
-    else { state.likesPage += 1; }
-  } catch (e) {
-    console.error("Likes load failed", e);
-    showToast(e.message || "Не удалось загрузить лайки");
-  } finally { state.likesLoading = false; }
+    if (state.likesPage >= state.likesPages) state.likesLoaded = true; else state.likesPage += 1;
+  } catch (e) { console.error("Likes load failed", e); showToast(e.message || "Не удалось загрузить лайки"); }
+  finally { state.likesLoading = false; }
 }
-
-likesList.addEventListener("scroll", () => {
-  if (state.likesLoaded || state.likesLoading) { return; }
-  if (likesList.scrollTop + likesList.clientHeight >= likesList.scrollHeight - 120) { loadLikes(false); }
-});
-
+likesList.addEventListener("scroll", () => { if (state.likesLoaded || state.likesLoading) return; if (likesList.scrollTop + likesList.clientHeight >= likesList.scrollHeight - 120) loadLikes(false); });
 async function loadState() {
   try {
     const data = await apiFetch(withUser("/api/state"));
-    state.globalUseLikes = !!data.global_use_likes;
-    globalUseLikes.checked = state.globalUseLikes;
-    if (!state.mode && data.mode) {
-      state.mode = data.mode;
-      state.seedArtist = data.seed_artist || state.seedArtist;
-      state.seedTrack = data.seed_track || state.seedTrack;
-    }
-    if (data.current_artist && data.current_title && data.current_artist === state.artist && data.current_title === state.title) {
-      state.liked = !!data.liked;
-      updateLikeBtn();
-    }
-    updateTrackInfo();
-    updateModesPanel();
-  } catch (e) {
-    console.error("Load state failed", e);
-    if (e && e.message && e.message.toLowerCase().includes("unauthorized")) {
-      showToast("Нет авторизации. Открывай плеер из Telegram.");
-    }
-  }
+    state.globalUseLikes = !!data.global_use_likes; globalUseLikes.checked = state.globalUseLikes;
+    if (!state.mode && data.mode) { state.mode = data.mode; state.seedArtist = data.seed_artist || state.seedArtist; state.seedTrack = data.seed_track || state.seedTrack; }
+    if (data.current_artist && data.current_title && data.current_artist === state.artist && data.current_title === state.title) { state.liked = !!data.liked; updateLikeBtn(); }
+    updateTrackInfo(); updateModesPanel();
+  } catch (e) { console.error("Load state failed", e); if (e && e.message && e.message.toLowerCase().includes("unauthorized")) showToast("Нет авторизации. Открывай плеер из Telegram."); }
 }
 
+/* ===== ИНИЦИАЛИЗАЦИЯ ===== */
 if (initialData && initialData.artist && (initialData.title || initialData.track)) {
-  applyTrackData({
-    artist: initialData.artist,
-    title: initialData.title || initialData.track,
-    file_url: initialData.file_url,
-    cover_url: initialData.cover_url,
-    mode: initialData.mode,
-    seed_artist: initialData.seed_artist,
-    seed_track: initialData.seed_track,
-    liked: initialData.liked
-  });
-} else {
-  updateTrackInfo();
-  updateCover();
-  updateLikeBtn();
-  updateModesPanel();
-}
+  applyTrackData({ artist: initialData.artist, title: initialData.title || initialData.track, file_url: initialData.file_url, cover_url: initialData.cover_url, mode: initialData.mode, seed_artist: initialData.seed_artist, seed_track: initialData.seed_track, liked: initialData.liked });
+} else { updateTrackInfo(); updateCover(); updateLikeBtn(); updateModesPanel(); }
 
-audio.volume = 1;
-volumeInput.value = "1";
+/* Громкость: загрузка из localStorage ДО первого рендера */
+const savedVol = loadVolume();
+audio.volume = savedVol;
+volumeInput.value = String(savedVol);
 updateVolumeIcon();
-updateRangeFill(seek);
+setRangeFill(seek);
 updatePlayIcon();
 updateDownloadBtn();
 updatePrevBtn();
 loadState();
-
-if (!tg) { showToast("Открывай плеер из Telegram, иначе авторизация не будет работать"); }
-if (!apiBase) { showToast("API base не задан. Открывай плеер кнопкой из бота."); }
+if (!tg) showToast("Открывай плеер из Telegram, иначе авторизация не будет работать");
+if (!apiBase) showToast("API base не задан. Открывай плеер кнопкой из бота.");
 </script>
 </body>
 </html>
