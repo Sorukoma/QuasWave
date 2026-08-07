@@ -306,7 +306,7 @@ input[type="range"]::-moz-range-thumb {
 <div id="tagPanel" class="search-panel tag-panel">
   <div class="panel-header"><div><div class="panel-title">🎭 Поиск жанра</div><div class="panel-subtitle">Last.fm понимает жанры на английском: witch house, techno, ambient</div></div><button id="closeTagBtn" class="icon-btn" title="Закрыть">✖️</button></div>
   <div class="search-body">
-    <div class="search-field"><label for="tagSearchInput">Жанр</label><input id="tagSearchInput" class="search-input" type="text" placeholder="Например: witchhouse, techno, ambient" autocomplete="off"></div>
+    <div class="search-field"><label for="tagSearchInput">Жанр</label><input id="tagSearchInput" class="search-input" type="text" placeholder="Например: witchhouse, techno, ambient, rap" autocomplete="off"></div>
     <button id="tagSearchGoBtn" class="search-go">Искать</button>
     <div id="tagSearchResults" class="search-results"></div>
   </div>
@@ -317,17 +317,42 @@ input[type="range"]::-moz-range-thumb {
 <audio id="audio" preload="auto"></audio>
 
 <script>
-const APP_VERSION = "20260803-1";
+const APP_VERSION = "20260803-2";
+
 const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-if (tg) { try { tg.ready(); tg.expand(); if (tg.setHeaderColor) { tg.setHeaderColor("#0b0f1a"); } } catch (e) { console.error("Telegram WebApp init failed", e); } }
+if (tg) {
+  try {
+    tg.ready();
+    tg.expand();
+    if (tg.setHeaderColor) {
+      tg.setHeaderColor("#0b0f1a");
+    }
+  } catch (e) {
+    console.error("Telegram WebApp init failed", e);
+  }
+}
 
 const params = new URLSearchParams(window.location.search);
 
-function b64ToUtf8(b) { const bin = atob(b); return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))); }
-function decodeB64UrlSafe(v) { if (!v) return ""; let b = v.replace(/-/g, "+").replace(/_/g, "/"); while (b.length % 4) b += "="; return b64ToUtf8(b); }
+function b64ToUtf8(b) {
+  const bin = atob(b);
+  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+}
+
+function decodeB64UrlSafe(v) {
+  if (!v) return "";
+  let b = v.replace(/-/g, "+").replace(/_/g, "/");
+  while (b.length % 4) b += "=";
+  return b64ToUtf8(b);
+}
 
 let initialData = {};
-try { const raw = params.get("data"); if (raw) initialData = JSON.parse(decodeB64UrlSafe(raw)); } catch (e) { console.error("Cannot parse initial data", e); }
+try {
+  const raw = params.get("data");
+  if (raw) initialData = JSON.parse(decodeB64UrlSafe(raw));
+} catch (e) {
+  console.error("Cannot parse initial data", e);
+}
 
 const DEFAULT_API_BASE = "";
 const ALLOWED_API_HOSTS = ["trycloudflare.com", "sorukoma.github.io", "mooo.com"];
@@ -338,7 +363,9 @@ function isAllowedApiBase(value) {
     const url = new URL(value);
     if (url.protocol !== "https:") return false;
     return ALLOWED_API_HOSTS.some(h => url.hostname === h || url.hostname.endsWith("." + h));
-  } catch (e) { return false; }
+  } catch (e) {
+    return false;
+  }
 }
 
 let apiBase = DEFAULT_API_BASE;
@@ -349,15 +376,25 @@ try {
     if (isAllowedApiBase(d)) apiBase = d;
     else console.warn("api_base ignored");
   }
-} catch (e) { console.error("Cannot parse api_base", e); }
+} catch (e) {
+  console.error("Cannot parse api_base", e);
+}
 apiBase = (apiBase || "").replace(/\/+$/g, "");
 
-function firstDefined(...vals) { for (const v of vals) { if (v !== undefined && v !== null && String(v).length > 0) return String(v); } return ""; }
+function firstDefined(...vals) {
+  for (const v of vals) {
+    if (v !== undefined && v !== null && String(v).length > 0) return String(v);
+  }
+  return "";
+}
 
 const tgUserId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id ? String(tg.initDataUnsafe.user.id) : "";
+const authUser = params.get("auth_user") || "";
+const authExpires = params.get("auth_expires") || "";
+const authSig = params.get("auth_sig") || "";
 
 const state = {
-  userId: firstDefined(tgUserId, initialData.user_id, params.get("user_id"), "0"),
+  userId: firstDefined(tgUserId, authUser, initialData.user_id, params.get("user_id"), "0"),
   artist: initialData.artist || "",
   title: initialData.title || initialData.track || "",
   fileUrl: initialData.file_url || "",
@@ -443,17 +480,56 @@ let audioErrorRetry = false;
 const VOL_KEY = "quaswave_volume";
 
 function loadVolume() {
-  try { const v = localStorage.getItem(VOL_KEY); if (v !== null) { const n = parseFloat(v); if (isFinite(n) && n >= 0 && n <= 1) return n; } } catch (e) {}
+  try {
+    const v = localStorage.getItem(VOL_KEY);
+    if (v !== null) {
+      const n = parseFloat(v);
+      if (isFinite(n) && n >= 0 && n <= 1) return n;
+    }
+  } catch (e) {}
   return 1;
 }
-function saveVolume(v) { try { localStorage.setItem(VOL_KEY, String(v)); } catch (e) {} }
 
-function haptic(style) { try { if (tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred) tg.HapticFeedback.impactOccurred(style || "light"); } catch (e) {} }
-function showToast(msg) { toast.textContent = msg; toast.classList.add("show"); if (toastTimer) clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove("show"), 2600); }
-function setLoading(on) { loading.classList.toggle("show", !!on); }
-function formatTime(s) { if (!isFinite(s) || s < 0) return "0:00"; const t = Math.floor(s); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); }
-function formatListeners(v) { const n = Number(v || 0); if (!isFinite(n) || n <= 0) return ""; if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M"; if (n >= 1e3) return Math.round(n / 1e3) + "K"; return String(n); }
-function reactionKey(a, t) { return String(a || "").trim().toLowerCase() + "|||" + String(t || "").trim().toLowerCase(); }
+function saveVolume(v) {
+  try {
+    localStorage.setItem(VOL_KEY, String(v));
+  } catch (e) {}
+}
+
+function haptic(style) {
+  try {
+    if (tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred) tg.HapticFeedback.impactOccurred(style || "light");
+  } catch (e) {}
+}
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add("show");
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+}
+
+function setLoading(on) {
+  loading.classList.toggle("show", !!on);
+}
+
+function formatTime(s) {
+  if (!isFinite(s) || s < 0) return "0:00";
+  const t = Math.floor(s);
+  return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0");
+}
+
+function formatListeners(v) {
+  const n = Number(v || 0);
+  if (!isFinite(n) || n <= 0) return "";
+  if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M";
+  if (n >= 1e3) return Math.round(n / 1e3) + "K";
+  return String(n);
+}
+
+function reactionKey(a, t) {
+  return String(a || "").trim().toLowerCase() + "|||" + String(t || "").trim().toLowerCase();
+}
 
 function setRangeFill(input) {
   if (!input) return;
@@ -474,6 +550,7 @@ function modeTitle(mode) {
 
 function updateModeLabel() {
   let text = "🎵 Волна QuasWave — нажми, чтобы сменить";
+
   if (state.mode === "likes") text = "❤️ Волна по лайкам";
   else if (state.mode === "likes_playlist") text = "❤️ Плейлист из лайков";
   else if (state.mode === "artist") text = "🎤 Волна по исполнителю: " + (state.seedArtist || state.artist || "");
@@ -481,6 +558,7 @@ function updateModeLabel() {
   else if (state.mode === "tag") text = "🎭 Волна по жанру: " + (state.seedTag || "");
   else if (state.mode === "track") text = "🎶 Волна по треку: " + (state.seedArtist || state.artist || "") + " — " + (state.seedTrack || state.title || "");
   else if (state.artist && state.title) text = "🎶 Волна по треку: " + state.artist + " — " + state.title;
+
   modeLabelText.textContent = text;
 }
 
@@ -493,12 +571,24 @@ function updateTrackInfo() {
 }
 
 function updateCover() {
-  if (state.coverUrl) { coverImg.src = state.coverUrl; coverImg.style.display = "block"; coverPlaceholder.style.display = "none"; }
-  else { coverImg.removeAttribute("src"); coverImg.style.display = "none"; coverPlaceholder.style.display = "block"; }
+  if (state.coverUrl) {
+    coverImg.src = state.coverUrl;
+    coverImg.style.display = "block";
+    coverPlaceholder.style.display = "none";
+  } else {
+    coverImg.removeAttribute("src");
+    coverImg.style.display = "none";
+    coverPlaceholder.style.display = "block";
+  }
 }
 
-function updateLikeBtn() { likeBtn.classList.toggle("liked", !!state.liked); }
-function updateDownloadBtn() { downloadBtn.disabled = !(state.artist && state.title); }
+function updateLikeBtn() {
+  likeBtn.classList.toggle("liked", !!state.liked);
+}
+
+function updateDownloadBtn() {
+  downloadBtn.disabled = !(state.artist && state.title);
+}
 
 function updatePlayIcon() {
   const playing = !audio.paused;
@@ -514,7 +604,9 @@ function updateVolumeIcon() {
   setRangeFill(volumeInput);
 }
 
-function updatePrevBtn() { prevBtn.disabled = playHistory.length === 0; }
+function updatePrevBtn() {
+  prevBtn.disabled = playHistory.length === 0;
+}
 
 function snapshotCurrent() {
   if (!state.artist || !state.title || !state.fileUrl) return null;
@@ -551,15 +643,20 @@ function canShowPreviousWave() {
 
 function updateModesPanel() {
   globalUseLikes.checked = !!state.globalUseLikes;
+
   if (canShowPreviousWave()) {
     previousWaveBtn.style.display = "block";
     previousWaveBtn.textContent = "↩️ Вернуться: " + modeTitle(state.previousWave.mode);
-  } else previousWaveBtn.style.display = "none";
+  } else {
+    previousWaveBtn.style.display = "none";
+  }
 }
 
 function applyTrackData(data) {
   if (!data) return;
+
   const oldSnap = applyingHistory ? null : snapshotCurrent();
+
   const incomingMode = data.mode || "";
   const newMode = incomingMode || state.mode;
 
@@ -568,7 +665,9 @@ function applyTrackData(data) {
   const incomingSeedTag = (data.seed_tag !== undefined && data.seed_tag !== null && data.seed_tag !== "") ? data.seed_tag : state.seedTag;
 
   let shouldSavePrev = false;
+
   if (state.mode && newMode && newMode !== state.mode) shouldSavePrev = true;
+
   if (state.mode && newMode && newMode === state.mode) {
     if (newMode === "track" || newMode === "artist") {
       if (incomingSeedArtist && incomingSeedArtist !== state.seedArtist) shouldSavePrev = true;
@@ -624,25 +723,48 @@ function applyTrackData(data) {
 
 async function apiFetch(path, options) {
   options = options || {};
+
   if (!apiBase) throw new Error("API base не задан. Открывай плеер кнопкой из бота.");
   if (!isAllowedApiBase(apiBase)) throw new Error("API base is not allowed");
+
   const headers = Object.assign({}, options.headers || {});
-  if (tg && tg.initData) headers["X-Telegram-Init-Data"] = tg.initData;
-  else console.warn("Telegram initData is missing");
-  const fetchOptions = { method: options.method || "GET", cache: "no-store", headers: headers };
+
+  if (tg && tg.initData) {
+    headers["X-Telegram-Init-Data"] = tg.initData;
+  } else {
+    console.warn("Telegram initData is missing");
+  }
+
+  if (authUser && authSig) {
+    headers["X-QuasWave-User"] = authUser;
+    headers["X-QuasWave-Expires"] = authExpires;
+    headers["X-QuasWave-Sig"] = authSig;
+  }
+
+  const fetchOptions = {
+    method: options.method || "GET",
+    cache: "no-store",
+    headers: headers
+  };
+
   if (options.json !== undefined) {
     headers["Content-Type"] = "application/json";
     fetchOptions.body = JSON.stringify(options.json);
   }
+
   const timeoutMs = options.timeout || (path.indexOf("/api/start") !== -1 || path.indexOf("/api/next_track") !== -1 ? 95000 : 25000);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   fetchOptions.signal = controller.signal;
+
   try {
     const response = await fetch(apiBase + path, fetchOptions);
     if (!response.ok) {
       let message = "HTTP " + response.status;
-      try { const d = await response.json(); if (d && d.error) message = d.error; } catch (e) {}
+      try {
+        const d = await response.json();
+        if (d && d.error) message = d.error;
+      } catch (e) {}
       throw new Error(message);
     }
     return await response.json();
@@ -654,7 +776,9 @@ async function apiFetch(path, options) {
   }
 }
 
-function withUser(path) { return path + (path.includes("?") ? "&" : "?") + "user_id=" + encodeURIComponent(state.userId); }
+function withUser(path) {
+  return path + (path.includes("?") ? "&" : "?") + "user_id=" + encodeURIComponent(state.userId);
+}
 
 function buildNextPath() {
   const q = new URLSearchParams();
@@ -666,20 +790,34 @@ function buildNextPath() {
   return "/api/next_track?" + q.toString();
 }
 
-async function playAudio() { try { await audio.play(); } catch (e) { console.error("Play failed", e); showToast("Не удалось воспроизвести"); } }
+async function playAudio() {
+  try {
+    await audio.play();
+  } catch (e) {
+    console.error("Play failed", e);
+    showToast("Не удалось воспроизвести");
+  }
+}
 
 async function ensureInitialAndPlay() {
   setLoading(true);
   try {
-    if (state.fileUrl) { updatePlayIcon(); await playAudio(); return; }
+    if (state.fileUrl) {
+      updatePlayIcon();
+      await playAudio();
+      return;
+    }
     await requestNext(true);
-  } finally { setLoading(false); }
+  } finally {
+    setLoading(false);
+  }
 }
 
 async function requestNext(autoplay) {
   if (state.nextLoading) return;
   state.nextLoading = true;
   setLoading(true);
+
   try {
     const data = await apiFetch(buildNextPath());
     applyTrackData(data);
@@ -793,8 +931,13 @@ async function startGlobalWave() {
 
 async function startPreviousWave() {
   const prev = state.previousWave;
-  if (!prev || !canShowPreviousWave()) { showToast("Нет предыдущей волны"); return; }
+  if (!prev || !canShowPreviousWave()) {
+    showToast("Нет предыдущей волны");
+    return;
+  }
+
   closeModes();
+
   if (prev.mode === "track") await startTrack(prev.seedArtist, prev.seedTrack, true);
   else if (prev.mode === "artist") await startArtist(prev.seedArtist);
   else if (prev.mode === "likes") await startLikesWave();
@@ -809,6 +952,7 @@ function playFromHistory() {
   const prev = playHistory.pop();
   updatePrevBtn();
   haptic("medium");
+
   applyingHistory = true;
   applyTrackData({
     artist: prev.artist,
@@ -827,8 +971,16 @@ function playFromHistory() {
 }
 
 async function likeCurrent() {
-  if (!state.artist || !state.title) { showToast("Сначала запусти трек"); return; }
-  if (state.liked) { await unlikeCurrent(); return; }
+  if (!state.artist || !state.title) {
+    showToast("Сначала запусти трек");
+    return;
+  }
+
+  if (state.liked) {
+    await unlikeCurrent();
+    return;
+  }
+
   try {
     await apiFetch(withUser("/api/like"), { method: "POST", json: { artist: state.artist, track: state.title } });
     state.liked = true;
@@ -863,15 +1015,20 @@ async function unlikeItem(artist, track, rowEl) {
   try {
     await apiFetch(withUser("/api/unlike"), { method: "POST", json: { artist, track } });
     haptic("heavy");
+
     if (rowEl && rowEl.parentNode) {
       rowEl.classList.add("removing");
       const node = rowEl;
-      setTimeout(() => { if (node.parentNode) node.parentNode.removeChild(node); }, 220);
+      setTimeout(() => {
+        if (node.parentNode) node.parentNode.removeChild(node);
+      }, 220);
     }
+
     if (reactionKey(state.artist, state.title) === reactionKey(artist, track)) {
       state.liked = false;
       updateLikeBtn();
     }
+
     state.likesLoaded = false;
     showToast("Убрано из лайков");
   } catch (e) {
@@ -881,8 +1038,13 @@ async function unlikeItem(artist, track, rowEl) {
 }
 
 async function dislikeCurrent() {
-  if (!state.artist || !state.title) { await requestNext(true); return; }
+  if (!state.artist || !state.title) {
+    await requestNext(true);
+    return;
+  }
+
   setLoading(true);
+
   try {
     await apiFetch(withUser("/api/dislike"), { method: "POST", json: { artist: state.artist, track: state.title } });
     state.liked = false;
@@ -899,10 +1061,15 @@ async function dislikeCurrent() {
 }
 
 async function sendTrackToTg() {
-  if (!state.artist || !state.title) { showToast("Сначала запусти трек"); return; }
+  if (!state.artist || !state.title) {
+    showToast("Сначала запусти трек");
+    return;
+  }
+
   haptic("medium");
   setLoading(true);
   downloadBtn.disabled = true;
+
   try {
     await apiFetch(withUser("/api/send_track"), { method: "POST", json: { artist: state.artist, track: state.title } });
     haptic("light");
@@ -918,14 +1085,21 @@ async function sendTrackToTg() {
 
 playBtn.addEventListener("click", async () => {
   haptic("light");
-  if (!audio.src) { await ensureInitialAndPlay(); return; }
+  if (!audio.src) {
+    await ensureInitialAndPlay();
+    return;
+  }
   if (audio.paused) await playAudio();
   else audio.pause();
   updatePlayIcon();
 });
 
 prevBtn.addEventListener("click", playFromHistory);
-nextBtn.addEventListener("click", () => { haptic("light"); requestNext(true); });
+nextBtn.addEventListener("click", () => {
+  haptic("light");
+  requestNext(true);
+});
+
 likeBtn.addEventListener("click", likeCurrent);
 dislikeBtn.addEventListener("click", dislikeCurrent);
 downloadBtn.addEventListener("click", sendTrackToTg);
@@ -948,9 +1122,14 @@ volumeInput.addEventListener("input", () => {
   updateVolumeIcon();
 });
 
-audio.addEventListener("play", () => { audioErrorRetry = false; updatePlayIcon(); });
+audio.addEventListener("play", () => {
+  audioErrorRetry = false;
+  updatePlayIcon();
+});
+
 audio.addEventListener("pause", updatePlayIcon);
 audio.addEventListener("volumechange", updateVolumeIcon);
+
 audio.addEventListener("timeupdate", () => {
   if (isFinite(audio.duration) && audio.duration > 0) {
     seek.max = Math.floor(audio.duration);
@@ -960,6 +1139,7 @@ audio.addEventListener("timeupdate", () => {
     setRangeFill(seek);
   }
 });
+
 audio.addEventListener("loadedmetadata", () => {
   if (isFinite(audio.duration)) {
     seek.max = Math.floor(audio.duration);
@@ -967,7 +1147,9 @@ audio.addEventListener("loadedmetadata", () => {
     setRangeFill(seek);
   }
 });
+
 audio.addEventListener("ended", () => requestNext(true));
+
 audio.addEventListener("error", () => {
   if (audio.src) {
     if (!audioErrorRetry) {
@@ -981,7 +1163,10 @@ audio.addEventListener("error", () => {
   updatePlayIcon();
 });
 
-coverImg.addEventListener("error", () => { state.coverUrl = ""; updateCover(); });
+coverImg.addEventListener("error", () => {
+  state.coverUrl = "";
+  updateCover();
+});
 
 seek.addEventListener("input", () => {
   if (isFinite(audio.duration) && audio.duration > 0 && seek.max) {
@@ -996,15 +1181,19 @@ function openLikes() {
   closeSearch();
   closeArtistSearch();
   closeTagSearch();
+
   likesPanel.classList.add("open");
   backdrop.classList.add("show");
   likesUser.textContent = "user_id: " + state.userId;
+
   if (!state.likesLoaded) loadLikes(true);
 }
 
 function closeLikes() {
   likesPanel.classList.remove("open");
-  if (!modesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !artistPanel.classList.contains("open") && !tagPanel.classList.contains("open")) backdrop.classList.remove("show");
+  if (!modesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !artistPanel.classList.contains("open") && !tagPanel.classList.contains("open")) {
+    backdrop.classList.remove("show");
+  }
 }
 
 function openModes() {
@@ -1012,6 +1201,7 @@ function openModes() {
   closeSearch();
   closeArtistSearch();
   closeTagSearch();
+
   updateModesPanel();
   modesPanel.classList.add("open");
   backdrop.classList.add("show");
@@ -1021,7 +1211,10 @@ function openModes() {
 function closeModes() {
   modesPanel.classList.remove("open");
   modeLabel.classList.remove("panel-open");
-  if (!likesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !artistPanel.classList.contains("open") && !tagPanel.classList.contains("open")) backdrop.classList.remove("show");
+
+  if (!likesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !artistPanel.classList.contains("open") && !tagPanel.classList.contains("open")) {
+    backdrop.classList.remove("show");
+  }
 }
 
 function openSearch() {
@@ -1029,17 +1222,26 @@ function openSearch() {
   closeLikes();
   closeArtistSearch();
   closeTagSearch();
+
   searchPanel.classList.add("open");
   backdrop.classList.add("show");
   searchResults.innerHTML = "";
   searchTrackInput.value = "";
   searchArtistInput.value = "";
-  setTimeout(() => { try { searchTrackInput.focus(); } catch (e) {} }, 260);
+
+  setTimeout(() => {
+    try {
+      searchTrackInput.focus();
+    } catch (e) {}
+  }, 260);
 }
 
 function closeSearch() {
   searchPanel.classList.remove("open");
-  if (!likesPanel.classList.contains("open") && !modesPanel.classList.contains("open") && !artistPanel.classList.contains("open") && !tagPanel.classList.contains("open")) backdrop.classList.remove("show");
+
+  if (!likesPanel.classList.contains("open") && !modesPanel.classList.contains("open") && !artistPanel.classList.contains("open") && !tagPanel.classList.contains("open")) {
+    backdrop.classList.remove("show");
+  }
 }
 
 function openArtistSearch() {
@@ -1047,16 +1249,25 @@ function openArtistSearch() {
   closeLikes();
   closeSearch();
   closeTagSearch();
+
   artistPanel.classList.add("open");
   backdrop.classList.add("show");
   artistSearchResults.innerHTML = "";
   artistSearchInput.value = "";
-  setTimeout(() => { try { artistSearchInput.focus(); } catch (e) {} }, 260);
+
+  setTimeout(() => {
+    try {
+      artistSearchInput.focus();
+    } catch (e) {}
+  }, 260);
 }
 
 function closeArtistSearch() {
   artistPanel.classList.remove("open");
-  if (!likesPanel.classList.contains("open") && !modesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !tagPanel.classList.contains("open")) backdrop.classList.remove("show");
+
+  if (!likesPanel.classList.contains("open") && !modesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !tagPanel.classList.contains("open")) {
+    backdrop.classList.remove("show");
+  }
 }
 
 function openTagSearch() {
@@ -1064,16 +1275,25 @@ function openTagSearch() {
   closeLikes();
   closeSearch();
   closeArtistSearch();
+
   tagPanel.classList.add("open");
   backdrop.classList.add("show");
   tagSearchResults.innerHTML = "";
   tagSearchInput.value = "";
-  setTimeout(() => { try { tagSearchInput.focus(); } catch (e) {} }, 260);
+
+  setTimeout(() => {
+    try {
+      tagSearchInput.focus();
+    } catch (e) {}
+  }, 260);
 }
 
 function closeTagSearch() {
   tagPanel.classList.remove("open");
-  if (!likesPanel.classList.contains("open") && !modesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !artistPanel.classList.contains("open")) backdrop.classList.remove("show");
+
+  if (!likesPanel.classList.contains("open") && !modesPanel.classList.contains("open") && !searchPanel.classList.contains("open") && !artistPanel.classList.contains("open")) {
+    backdrop.classList.remove("show");
+  }
 }
 
 modeLabel.addEventListener("click", () => {
@@ -1084,13 +1304,22 @@ modeLabel.addEventListener("click", () => {
 
 openLikesBtn.addEventListener("click", openLikes);
 closeLikesBtn.addEventListener("click", closeLikes);
-backdrop.addEventListener("click", () => { closeLikes(); closeModes(); closeSearch(); closeArtistSearch(); closeTagSearch(); });
+
+backdrop.addEventListener("click", () => {
+  closeLikes();
+  closeModes();
+  closeSearch();
+  closeArtistSearch();
+  closeTagSearch();
+});
+
 closeModesBtn.addEventListener("click", closeModes);
 closeSearchBtn.addEventListener("click", closeSearch);
 closeArtistBtn.addEventListener("click", closeArtistSearch);
 closeTagBtn.addEventListener("click", closeTagSearch);
 
 previousWaveBtn.addEventListener("click", startPreviousWave);
+
 modeTrackBtn.addEventListener("click", () => openSearch());
 modeArtistBtn.addEventListener("click", () => openArtistSearch());
 modeTagBtn.addEventListener("click", () => openTagSearch());
@@ -1098,16 +1327,26 @@ modeTagBtn.addEventListener("click", () => openTagSearch());
 async function runTrackSearch() {
   const query = (searchTrackInput.value || "").trim();
   const artist = (searchArtistInput.value || "").trim();
-  if (!query) { showToast("Введи название трека"); searchTrackInput.focus(); return; }
+
+  if (!query) {
+    showToast("Введи название трека");
+    searchTrackInput.focus();
+    return;
+  }
+
   if (state.searching) return;
+
   state.searching = true;
   searchGoBtn.disabled = true;
   searchGoBtn.textContent = "Ищу...";
   searchResults.innerHTML = "";
+
   try {
     const data = await apiFetch(withUser("/api/search_tracks"), { method: "POST", json: { query, artist } });
     const items = data.items || [];
+
     searchResults.innerHTML = "";
+
     if (!items.length) {
       const e = document.createElement("div");
       e.className = "search-empty";
@@ -1115,33 +1354,42 @@ async function runTrackSearch() {
       searchResults.appendChild(e);
       return;
     }
+
     if (items.length === 1) {
       closeSearch();
       startTrack(items[0].artist, items[0].track, true);
       return;
     }
+
     items.forEach(item => {
       const row = document.createElement("button");
       row.type = "button";
       row.className = "search-item";
+
       const title = document.createElement("span");
       title.textContent = item.track;
+
       const sub = document.createElement("span");
       sub.className = "search-item-artist";
+
       const listeners = formatListeners(item.listeners);
       sub.textContent = item.artist + (listeners ? " • " + listeners : "");
+
       row.appendChild(title);
       row.appendChild(sub);
+
       row.addEventListener("click", () => {
         haptic("light");
         closeSearch();
         startTrack(item.artist, item.track, true);
       });
+
       searchResults.appendChild(row);
     });
   } catch (e) {
     console.error("Track search failed", e);
     searchResults.innerHTML = "";
+
     const em = document.createElement("div");
     em.className = "search-empty";
     em.textContent = e.message || "Ошибка поиска";
@@ -1155,16 +1403,26 @@ async function runTrackSearch() {
 
 async function runArtistSearch() {
   const query = (artistSearchInput.value || "").trim();
-  if (!query) { showToast("Введи исполнителя"); artistSearchInput.focus(); return; }
+
+  if (!query) {
+    showToast("Введи исполнителя");
+    artistSearchInput.focus();
+    return;
+  }
+
   if (state.artistSearching) return;
+
   state.artistSearching = true;
   artistSearchGoBtn.disabled = true;
   artistSearchGoBtn.textContent = "Ищу...";
   artistSearchResults.innerHTML = "";
+
   try {
     const data = await apiFetch(withUser("/api/search_artists"), { method: "POST", json: { query } });
     const items = data.items || [];
+
     artistSearchResults.innerHTML = "";
+
     if (!items.length) {
       const e = document.createElement("div");
       e.className = "search-empty";
@@ -1172,33 +1430,42 @@ async function runArtistSearch() {
       artistSearchResults.appendChild(e);
       return;
     }
+
     if (items.length === 1) {
       closeArtistSearch();
       startArtist(items[0].artist);
       return;
     }
+
     items.forEach(item => {
       const row = document.createElement("button");
       row.type = "button";
       row.className = "search-item";
+
       const title = document.createElement("span");
       title.textContent = item.artist;
+
       const sub = document.createElement("span");
       sub.className = "search-item-artist";
+
       const listeners = formatListeners(item.listeners);
       sub.textContent = listeners ? ("Слушатели: " + listeners) : "Last.fm artist";
+
       row.appendChild(title);
       row.appendChild(sub);
+
       row.addEventListener("click", () => {
         haptic("light");
         closeArtistSearch();
         startArtist(item.artist);
       });
+
       artistSearchResults.appendChild(row);
     });
   } catch (e) {
     console.error("Artist search failed", e);
     artistSearchResults.innerHTML = "";
+
     const em = document.createElement("div");
     em.className = "search-empty";
     em.textContent = e.message || "Ошибка поиска";
@@ -1212,50 +1479,69 @@ async function runArtistSearch() {
 
 async function runTagSearch() {
   const query = (tagSearchInput.value || "").trim();
-  if (!query) { showToast("Введи жанр"); tagSearchInput.focus(); return; }
+
+  if (!query) {
+    showToast("Введи жанр");
+    tagSearchInput.focus();
+    return;
+  }
+
   if (state.tagSearching) return;
+
   state.tagSearching = true;
   tagSearchGoBtn.disabled = true;
   tagSearchGoBtn.textContent = "Ищу...";
   tagSearchResults.innerHTML = "";
+
   try {
     const data = await apiFetch(withUser("/api/search_tags"), { method: "POST", json: { query } });
     const items = data.items || [];
+
     tagSearchResults.innerHTML = "";
+
     if (!items.length) {
       const e = document.createElement("div");
       e.className = "search-empty";
-      e.textContent = "Не нашёл. Попробуй по-английски: witch house, techno, ambient...";
+      e.textContent = "Не нашёл. Попробуй по-английски: witch house, techno, ambient, rap...";
       tagSearchResults.appendChild(e);
       return;
     }
+
     if (items.length === 1) {
       closeTagSearch();
       startTag(items[0].name);
       return;
     }
+
     items.forEach(item => {
       const row = document.createElement("button");
       row.type = "button";
       row.className = "search-item";
+
       const title = document.createElement("span");
       title.textContent = item.name;
+
       const sub = document.createElement("span");
       sub.className = "search-item-artist";
+
       const listeners = formatListeners(item.count);
       sub.textContent = listeners ? ("Тегов: " + listeners) : "Last.fm tag";
+
       row.appendChild(title);
       row.appendChild(sub);
+
       row.addEventListener("click", () => {
         haptic("light");
         closeTagSearch();
         startTag(item.name);
       });
+
       tagSearchResults.appendChild(row);
     });
   } catch (e) {
     console.error("Tag search failed", e);
     tagSearchResults.innerHTML = "";
+
     const em = document.createElement("div");
     em.className = "search-empty";
     em.textContent = e.message || "Ошибка поиска";
@@ -1271,17 +1557,52 @@ searchGoBtn.addEventListener("click", runTrackSearch);
 artistSearchGoBtn.addEventListener("click", runArtistSearch);
 tagSearchGoBtn.addEventListener("click", runTagSearch);
 
-searchTrackInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); runTrackSearch(); } });
-searchArtistInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); runTrackSearch(); } });
-artistSearchInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); runArtistSearch(); } });
-tagSearchInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); runTagSearch(); } });
+searchTrackInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    runTrackSearch();
+  }
+});
 
-modeLikesBtn.addEventListener("click", () => { closeModes(); startLikesWave(); });
-modePlaylistBtn.addEventListener("click", () => { closeModes(); startLikedPlaylist("", "", true); });
-modeGlobalBtn.addEventListener("click", () => { closeModes(); startGlobalWave(); });
+searchArtistInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    runTrackSearch();
+  }
+});
+
+artistSearchInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    runArtistSearch();
+  }
+});
+
+tagSearchInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    runTagSearch();
+  }
+});
+
+modeLikesBtn.addEventListener("click", () => {
+  closeModes();
+  startLikesWave();
+});
+
+modePlaylistBtn.addEventListener("click", () => {
+  closeModes();
+  startLikedPlaylist("", "", true);
+});
+
+modeGlobalBtn.addEventListener("click", () => {
+  closeModes();
+  startGlobalWave();
+});
 
 globalUseLikes.addEventListener("change", async () => {
   const checked = !!globalUseLikes.checked;
+
   try {
     await apiFetch(withUser("/api/settings"), { method: "POST", json: { global_use_likes: checked } });
     state.globalUseLikes = checked;
@@ -1297,44 +1618,57 @@ globalUseLikes.addEventListener("change", async () => {
 
 async function loadLikes(reset) {
   if (state.likesLoading) return;
+
   if (reset) {
     state.likesPage = 1;
     state.likesPages = 1;
     state.likesLoaded = false;
     likesList.innerHTML = "";
   }
+
   if (state.likesLoaded && state.likesPage > state.likesPages) return;
+
   state.likesLoading = true;
+
   try {
     const data = await apiFetch(withUser("/api/likes?page=" + encodeURIComponent(state.likesPage) + "&page_size=15"));
+
     if (reset) likesList.innerHTML = "";
+
     state.likesPage = data.page;
     state.likesPages = data.pages;
     likesUser.textContent = "user_id: " + data.user_id + " • всего " + data.total;
+
     (data.items || []).forEach(item => {
       const row = document.createElement("div");
       row.className = "like-item";
+
       const text = document.createElement("div");
       text.className = "like-item-text";
       text.textContent = item.artist + " — " + item.track;
+
       const del = document.createElement("button");
       del.type = "button";
       del.className = "like-del";
       del.textContent = "🗑";
       del.title = "Удалить из лайков";
+
       text.addEventListener("click", () => {
         haptic("light");
         closeLikes();
         startLikedPlaylist(item.artist, item.track, true);
       });
+
       del.addEventListener("click", ev => {
         ev.stopPropagation();
         unlikeItem(item.artist, item.track, row);
       });
+
       row.appendChild(text);
       row.appendChild(del);
       likesList.appendChild(row);
     });
+
     if (state.likesPage >= state.likesPages) state.likesLoaded = true;
     else state.likesPage += 1;
   } catch (e) {
@@ -1351,27 +1685,42 @@ likesList.addEventListener("scroll", () => {
 });
 
 async function loadState() {
+  // Telegram Desktop иногда тупит и отдаёт initData не сразу.
+  if (tg && !tg.initData) {
+    await new Promise(resolve => setTimeout(resolve, 350));
+  }
+
   try {
     const data = await apiFetch(withUser("/api/state"));
+
     state.globalUseLikes = !!data.global_use_likes;
     globalUseLikes.checked = state.globalUseLikes;
+
     if (!state.mode && data.mode) {
       state.mode = data.mode;
       state.seedArtist = data.seed_artist || state.seedArtist;
       state.seedTrack = data.seed_track || state.seedTrack;
       state.seedTag = data.seed_tag || state.seedTag;
     }
+
     if (data.current_artist && data.current_title && data.current_artist === state.artist && data.current_title === state.title) {
       state.liked = !!data.liked;
       updateLikeBtn();
     }
+
     updateTrackInfo();
     updateModesPanel();
   } catch (e) {
     console.error("Load state failed", e);
-    if (e && e.message && e.message.toLowerCase().includes("unauthorized")) showToast("Нет авторизации. Открывай плеер из Telegram.");
+    if (e && e.message && e.message.toLowerCase().includes("unauthorized")) {
+      showToast("Нет авторизации. Открывай плеер из Telegram. Если ты в Desktop-версии, обновись или открой заново кнопкой из бота.");
+    } else {
+      showToast(e.message || "Ошибка загрузки состояния");
+    }
   }
 }
+
+/* ===== INIT ===== */
 
 if (initialData && initialData.artist && (initialData.title || initialData.track)) {
   applyTrackData({
@@ -1400,9 +1749,12 @@ setRangeFill(seek);
 updatePlayIcon();
 updateDownloadBtn();
 updatePrevBtn();
-loadState();
 
-if (!tg) showToast("Открывай плеер из Telegram, иначе авторизация не будет работать");
+setTimeout(() => {
+  loadState();
+}, 80);
+
+if (!tg && !authSig) showToast("Открывай плеер из Telegram, иначе авторизация не будет работать");
 if (!apiBase) showToast("API base не задан. Открывай плеер кнопкой из бота.");
 </script>
 </body>
